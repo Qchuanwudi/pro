@@ -15,6 +15,7 @@ interface FormUserProps extends FormComponentProps {
 
 const FormUser: React.FC<FormUserProps> = props => {
   const { form, onSubmit: handleAdd, onClose, type, entity, roles } = props;
+  console.log(roles);
 
   const { getFieldDecorator } = form;
   const okHandle = () => {
@@ -83,9 +84,9 @@ const FormUser: React.FC<FormUserProps> = props => {
 
       {window.currentUser.userType === 2 ? (
         <>
-        {getFieldDecorator('projectId', { initialValue: window.currentUser.projectId })(
-          <Input type="hidden" />,
-        )}
+          {getFieldDecorator('projectId', { initialValue: window.currentUser.projectId })(
+            <Input type="hidden" />,
+          )}
         </>
       ) : null}
 

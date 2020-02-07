@@ -3,7 +3,7 @@
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
 import { extend } from 'umi-request';
-import { notification, message } from 'antd';
+import { notification, message, Modal } from 'antd';
 import { router } from 'umi';
 import { Md5 } from 'ts-md5';
 // import { Fingerprint2 } from 'fingerprintjs2';
@@ -61,10 +61,10 @@ const request = extend({
   parseResponse: true,
 });
 
-const params = {
-  APP_ID: 'admin_backend',
-  APP_SECRET: 'cdc58e10167b11eaa38fe111b14750bc',
-};
+// const params1 = {
+//   APP_ID: 'admin_backend',
+//   APP_SECRET: 'cdc58e10167b11eaa38fe111b14750bc',
+// };
 const params1 = {
   APP_ID: 'beinuo_backend',
   APP_SECRET: '7dd60af4323911eaa6d7d6e90e8984fc',
@@ -93,69 +93,24 @@ const deviceCode = () => {
 request.interceptors.request.use((url, options) => {
   const Nonce = getNonce();
   const Timestamp = new Date().getTime().toString();
-  let nappId;
-  let token;
-  let Sign;
-  if (window.location.host === 'admin.aiotpay.top') {
-    nappId = params.APP_ID;
-    token = Md5.hashStr([params.APP_ID, params.APP_SECRET, Timestamp, Nonce].join('')).toString();
-    Sign = Md5.hashStr(
-      [
-        `app_id=${params.APP_ID}`,
-        `app_token=${token}`,
-        `nonce=${Nonce}`,
-        `timestamp=${Timestamp}`,
-        `app_secret=${params.APP_SECRET}`,
-      ].join('&'),
-    )
-      .toString()
-      .toUpperCase();
-  } else if (window.location.host === 'console.aiotpay.top') {
-    nappId = params1.APP_ID;
-    token = Md5.hashStr([params1.APP_ID, params1.APP_SECRET, Timestamp, Nonce].join('')).toString();
-    Sign = Md5.hashStr(
-      [
-        `app_id=${params1.APP_ID}`,
-        `app_token=${token}`,
-        `nonce=${Nonce}`,
-        `timestamp=${Timestamp}`,
-        `app_secret=${params1.APP_SECRET}`,
-      ].join('&'),
-    )
-      .toString()
-      .toUpperCase();
-  } else {
-    nappId = params1.APP_ID;
-    token = Md5.hashStr([params1.APP_ID, params1.APP_SECRET, Timestamp, Nonce].join('')).toString();
-    Sign = Md5.hashStr(
-      [
-        `app_id=${params1.APP_ID}`,
-        `app_token=${token}`,
-        `nonce=${Nonce}`,
-        `timestamp=${Timestamp}`,
-        `app_secret=${params1.APP_SECRET}`,
-      ].join('&'),
-    )
-      .toString()
-      .toUpperCase();
+  
+  const nappId = params1.APP_ID;
+  const token = Md5.hashStr([params1.APP_ID, params1.APP_SECRET, Timestamp, Nonce].join('')).toString();
+  const Sign = Md5.hashStr(
+    [
+      `app_id=${params1.APP_ID}`,
+      `app_token=${token}`,
+      `nonce=${Nonce}`,
+      `timestamp=${Timestamp}`,
+      `app_secret=${params1.APP_SECRET}`,
+    ].join('&'),
+  )
+    .toString()
+    .toUpperCase();
 
-    // nappId = params.APP_ID;
-    // token = Md5.hashStr([params.APP_ID, params.APP_SECRET, Timestamp, Nonce].join('')).toString();
-    // Sign = Md5.hashStr(
-    //   [
-    //     `app_id=${params.APP_ID}`,
-    //     `app_token=${token}`,
-    //     `nonce=${Nonce}`,
-    //     `timestamp=${Timestamp}`,
-    //     `app_secret=${params.APP_SECRET}`,
-    //   ].join('&'),
-    // )
-    //   .toString()
-    //   .toUpperCase();
-
-  }
   options.headers = {
     Authorization: localStorage.getItem('authorizotion') || '',
+    'APP-ID': nappId,
   };
   const para = options.data;
   options.data = {
@@ -186,8 +141,14 @@ request.interceptors.response.use(async response => {
     } else {
       router.push('/user/login');
     }
+  } else if (data && data.code === 1060) {
+    localStorage.removeItem('authorizotion');
+    router.push('/user/login');
+    Modal.warning({
+      title: '提示信息',
+      content: '您的账号已在其他设备登录，请您重新登录！',
+    });
   }
-  // console.log(response)
   return response;
 });
 

@@ -55,7 +55,8 @@ export default {
   menu: {
     locale: true,
   },
-  title: '后台管理',
+  title: '北诺科技',
+  // title: '',
   pwa: false,
   iconfontUrl: '',
 } as DefaultSettings;

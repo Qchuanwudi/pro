@@ -36,3 +36,25 @@ export async function updateChannel(params: TableListParams) {
     },
   });
 }
+export async function updateUser(params: TableListParams) {
+  return request('/server/api/account/app-account/resetPassword', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryCategoryById(params) {
+  return request('/server/api/merchant/app-merchant/edit', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function addAppCategory(params: TableListParams) {
+  return request('/server/api/bn/channel/app-channel-type/save', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

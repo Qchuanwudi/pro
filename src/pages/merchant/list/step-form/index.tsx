@@ -1,4 +1,4 @@
-import { Card, Steps } from 'antd';
+import { Card, Steps, message } from 'antd';
 import React, { Component } from 'react';
 
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
@@ -6,6 +6,7 @@ import { connect } from 'dva';
 import { StateType } from './model';
 import Step1 from './components/Step1';
 import Step2 from './components/Step2';
+import Step4 from './components/Step4';
 import Step3 from './components/Step3';
 import styles from './style.less';
 
@@ -18,31 +19,38 @@ interface StepFormProps {
 class StepForm extends Component<StepFormProps> {
   getCurrentStep() {
     const { current } = this.props;
-    console.log(this.props)
+
     switch (current) {
       case 'info':
         return 0;
       case 'confirm':
         return 1;
-      case 'result':
+      case 'confirm2':
         return 2;
+      case 'result':
+        return 3;
       default:
         return 0;
     }
   }
-
   render() {
+    console.log(this.props);
     const currentStep = this.getCurrentStep();
+    console.log(currentStep);
     let stepComponent;
-    if (currentStep === 1) {
+    if (currentStep === 0) {
+      stepComponent = <Step1 />;
+    } else if (currentStep === 1) {
       stepComponent = <Step2 />;
     } else if (currentStep === 2) {
       stepComponent = <Step3 />;
+    } else if (currentStep === 3) {
+      stepComponent = <Step4 />;
     } else {
       stepComponent = <Step1 />;
     }
     return (
-      <PageHeaderWrapper content="添加商户">
+      <PageHeaderWrapper  content="" title="添加商户">
         <Card bordered={false}>
           <>
             <Steps current={currentStep} className={styles.steps}>

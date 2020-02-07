@@ -28,6 +28,6 @@ export interface TableListData {
 export interface TableListParams {
   channelType?: string;
   channelName?: string;
-  commissionType?: string;
-  commissionRatio?: string;
+  commissionType?: int;
+  commissionRatio?: number;
 }

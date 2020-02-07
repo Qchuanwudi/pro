@@ -74,6 +74,104 @@ export default {
   },
   // umi routes: https://umijs.org/zh/guide/router.html
   routes: [
+    // 平台管理菜单配置
+    {
+      path: '/analysis',
+      component: '../layouts/SecurityLayout',
+      routes: [
+        {
+          component: '../layouts/BasicLayout',
+          routes: [
+            {
+              path: '/analysis/channel/home',
+              name: '代理商首页',
+              component: './analysis/channel',
+            },
+            {
+              path: '/analysis/merchant/home',
+              name: '商户首页',
+              component: './analysis/merchant',
+            },
+          ],
+        },
+        {
+          component: './404',
+        },
+      ],
+    },
+    // 平台管理菜单配置
+    {
+      path: '/platform',
+      component: '../layouts/SecurityLayout',
+      routes: [
+        {
+          component: '../layouts/BasicLayout',
+          routes: [
+            {
+              path: '/channel/home',
+              name: '代理商首页',
+              component: './analysis/channel',
+            },
+            {
+              path: '/merchant/home',
+              name: '商户首页',
+              component: './analysis/merchant',
+            },
+            {
+              path: '/platform/home',
+              name: '首页',
+              component: './platform/home',
+            },
+            {
+              routes: [
+                {
+                  path: '/platform/channel/add',
+                  name: '添加代理',
+                  component: './platform/channel/add',
+                },
+                {
+                  path: '/platform/channel/list',
+                  name: '代理商列表',
+                  component: './platform/channel/list',
+                },
+                {
+                  path: '/platform/channel/category',
+                  name: '代理类型',
+                  component: './platform/channel/category',
+                },
+              ],
+              path: '/platform/channel/add',
+              name: '添加代理',
+              component: './platform/channel/add',
+            },
+            {
+              path: '/platform/channel/list',
+              name: '代理商列表',
+              component: './platform/channel/list',
+            },
+            {
+              path: '/platform/channel/category',
+              name: '代理类型',
+              component: './platform/channel/category',
+            },
+            // {
+            //   path: '/platform/merchant/add',
+            //   name: '添加商户',
+            //   component: './platform/merchant/add',
+            // },
+            {
+              path: '/platform/merchant/list',
+              name: '商户列表',
+              component: './platform/merchant/list',
+            },
+          ],
+        },
+        {
+          component: './404',
+        },
+      ],
+    },
+
     {
       path: '/home',
       component: '../layouts/SecurityLayout',
@@ -122,7 +220,7 @@ export default {
                 },
 
                 {
-                  path: 'channel/list/detailpage',
+                  path: '/channel/list/detailpage',
                   name: '代理商查看详情',
                   component: './channel/list/detailpage',
                 },
@@ -148,9 +246,14 @@ export default {
                   component: './channel/channel-user/todayOverview',
                 },
                 {
-                  path: 'channel/channel-user/list/detailpage',
+                  path: '/channel/channel-user/list/detailpage',
                   name: '商户详情',
                   component: './channel/channel-user/list/detailpage',
+                },
+                {
+                  path: '/channel/channel-bills/list',
+                  name: '代理对账',
+                  component: './channel/channel-bills/list',
                 },
               ],
             },
@@ -190,7 +293,7 @@ export default {
                   component: './merchant/list/step-form',
                 },
                 {
-                  path: 'merchant/list/detailpage',
+                  path: '/merchant/list/detailpage',
                   name: '商户详情',
                   component: './merchant/list/detailpage',
                 },
@@ -209,7 +312,6 @@ export default {
                   name: '流水记录',
                   component: './merchant/merchant-user/list',
                 },
-
               ],
             },
 
@@ -217,16 +319,13 @@ export default {
               component: './404',
             },
           ],
-
         },
 
         {
           component: './404',
         },
       ],
-
     },
-
 
     {
       path: '/user',
@@ -247,13 +346,8 @@ export default {
       ],
     },
     {
-      path: '/',
       component: '../layouts/SecurityLayout',
       routes: [
-        {
-          path: '/',
-          redirect: '/sys/user',
-        },
         {
           path: '/sys',
           component: '../layouts/BasicLayout',
@@ -343,12 +437,14 @@ export default {
     },
   },
   manifest: {
-    basePath: '/',
+    basePath: './',
   },
   proxy: {
     '/server/api/': {
-      // target: 'http://console.aiotpay.top/',
-      target: 'http://localhost:8082/',
+      target: 'http://admin.aiotpay.top/',
+      // target: 'http://console.aiotpay.top',
+      //  target: 'http://tc.aiotpay.top',
+      // target: 'http://127.0.0.1:8082/',
       changeOrigin: true,
       pathRewrite: {
         '^/server': '',

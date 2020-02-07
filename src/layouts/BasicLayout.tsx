@@ -67,52 +67,19 @@ const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] =>
    */
 
 const defaultFooterDom = (
-  <DefaultFooter
-    copyright="2019 蚂蚁金服体验技术部出品"
+    <DefaultFooter
+    copyright="2019 北诺科技版权所有"
     links={[
-      {
-        key: 'Ant Design Pro',
-        title: 'Ant Design Pro',
-        href: 'https://pro.ant.design',
-        blankTarget: true,
-      },
-      {
-        key: 'github',
-        title: <Icon type="github" />,
-        href: 'https://github.com/ant-design/ant-design-pro',
-        blankTarget: true,
-      },
-      {
-        key: 'Ant Design',
-        title: 'Ant Design',
-        href: 'https://ant.design',
-        blankTarget: true,
-      },
+     
     ]}
   />
 );
 
 const footerRender: BasicLayoutProps['footerRender'] = () => {
-  if (!isAntDesignPro()) {
-    return defaultFooterDom;
-  }
+
   return (
     <>
       {defaultFooterDom}
-      <div
-        style={{
-          padding: '0px 24px 24px',
-          textAlign: 'center',
-        }}
-      >
-        <a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer">
-          <img
-            src="https://www.netlify.com/img/global/badges/netlify-color-bg.svg"
-            width="82px"
-            alt="netlify logo"
-          />
-        </a>
-      </div>
     </>
   );
 };
@@ -170,8 +137,8 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
         {
           path: '/',
           breadcrumbName: formatMessage({
-            id: 'enen',
-            defaultMessage: '你好',
+            id: 'en',
+            defaultMessage: '首页',
           }),
         },
         ...routers,
@@ -186,6 +153,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
       }}
       footerRender={footerRender}
       menuDataRender={() => menus}
+      
       formatMessage={formatMessage}
       rightContentRender={() => <RightContent />}
       {...props}

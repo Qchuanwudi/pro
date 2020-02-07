@@ -1,4 +1,4 @@
-import { Alert, Checkbox, Icon } from 'antd';
+import { Alert, Checkbox, Icon ,Form,Input, Row} from 'antd';
 import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
 import React, { Component } from 'react';
 
@@ -10,10 +10,12 @@ import { connect } from 'dva';
 import { StateType } from '@/models/login';
 import LoginComponents from './components/Login';
 import styles from './style.less';
-import { LoginParamsType } from '@/services/login';
+import { LoginParamsType ,verificationcode} from '@/services/login';
+import Captcha from "./Captcha";
 import { ConnectState } from '@/models/connect';
+import { async } from 'q';
 
-const { Tab, UserName, Password, Mobile, Captcha, Submit } = LoginComponents;
+const { UserName, Password, Submit } = LoginComponents;
 
 interface LoginProps {
   dispatch: Dispatch<AnyAction>;
@@ -23,15 +25,30 @@ interface LoginProps {
 interface LoginState {
   type: string;
   autoLogin: boolean;
+  image: string;
+  code: string;
+  inputCode: string;
+  key: string;
 }
 
 class Login extends Component<LoginProps, LoginState> {
+
   loginForm: FormComponentProps['form'] | undefined | null = undefined;
 
   state: LoginState = {
     type: 'account',
     autoLogin: true,
+    image: '',
+    code: "1234",
+    inputCode: '',
+    key:''
   };
+
+  componentDidMount() {
+    this.handleVerify()
+  }
+
+
 
   changeAutoLogin = (e: CheckboxChangeEvent) => {
     this.setState({
@@ -39,7 +56,27 @@ class Login extends Component<LoginProps, LoginState> {
     });
   };
 
+  changeCode = async () => {
+    // this.props.dispatch({  type: 'formAndstepForm/saveStepFormData',
+    //   payload: { businessLicenseAuthPic: value },
+    // })
+    const response = await verificationcode(this.state.inputCode)
+    debugger
+    console.log(response)
+    this.setState({
+      code: response.result.code,
+      key:response.result.key
+    })
+    // this.setState({
+    //   code: this.state.image
+    // });
+  }
+
   handleSubmit = (err: unknown, values: LoginParamsType) => {
+if (this.state.inputCode) {
+                     verificationcode(this.state.inputCode,this.state.key)
+}
+  debugger
     const { type } = this.state;
     if (!err) {
       const { dispatch } = this.props;
@@ -53,42 +90,43 @@ class Login extends Component<LoginProps, LoginState> {
     }
   };
 
-  onTabChange = (type: string) => {
-    this.setState({ type });
-  };
+  handleVerify = async() => {
+      const response = await verificationcode('')
+    console.log(response)
+    this.setState({
+      code: response.result.code,
+      key:response.result.key
+    })
 
-  onGetCaptcha = () =>
-    new Promise<boolean>((resolve, reject) => {
-      if (!this.loginForm) {
-        return;
-      }
-      this.loginForm.validateFields(
-        ['mobile'],
-        {},
-        async (err: unknown, values: LoginParamsType) => {
-          if (err) {
-            reject(err);
-          } else {
-            const { dispatch } = this.props;
-            try {
-              const success = await ((dispatch({
-                type: 'login/getCaptcha',
-                payload: values.mobile,
-              }) as unknown) as Promise<unknown>);
-              resolve(!!success);
-            } catch (error) {
-              reject(error);
-            }
-          }
-        },
-      );
-    });
-
+  }
   renderMessage = (content: string) => (
     <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />
   );
 
+
+
+ 
+
+  checkCode() {
+    const { inputCode, code } = this.state;
+    if (inputCode !== code) {
+      alert("错误刷新");
+      this.setState(
+        {
+          inputCode: ""
+        },
+        () => {
+          this.changeCode();
+        }
+      );
+    } else {
+      alert("成功");
+    }
+  }
   render() {
+    console.log(this.state.inputCode)
+    console.log(this.state.key)
+    const { code, inputCode } = this.state;
     const { userLogin = {}, submitting } = this.props;
     const { status, type: loginType, message: loginMessage } = userLogin;
     const { type, autoLogin } = this.state;
@@ -96,14 +134,13 @@ class Login extends Component<LoginProps, LoginState> {
       <div className={styles.main}>
         <LoginComponents
           defaultActiveKey={type}
-          onTabChange={this.onTabChange}
           onSubmit={this.handleSubmit}
           onCreate={(form?: FormComponentProps['form']) => {
             this.loginForm = form;
           }}
         >
-          <Tab key="account" tab={formatMessage({ id: 'user-login.login.tab-login-credentials' })}>
-            {status === 'error' &&
+          <div key="account">
+          {status === 'error' &&
               loginType === 'account' &&
               !submitting &&
               this.renderMessage(`${loginMessage}`)}
@@ -133,43 +170,43 @@ class Login extends Component<LoginProps, LoginState> {
                 }
               }}
             />
-          </Tab>
-          <Tab key="mobile" tab={formatMessage({ id: 'user-login.login.tab-login-mobile' })}>
-            {status === 'error' &&
-              loginType === 'mobile' &&
-              !submitting &&
-              this.renderMessage(
-                formatMessage({ id: 'user-login.login.message-invalid-verification-code' }),
-              )}
-            <Mobile
-              name="mobile"
-              placeholder={formatMessage({ id: 'user-login.phone-number.placeholder' })}
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({ id: 'user-login.phone-number.required' }),
-                },
-                {
-                  pattern: /^1\d{10}$/,
-                  message: formatMessage({ id: 'user-login.phone-number.wrong-format' }),
-                },
-              ]}
-            />
-            <Captcha
-              name="captcha"
-              placeholder={formatMessage({ id: 'user-login.verification-code.placeholder' })}
-              countDown={120}
-              onGetCaptcha={this.onGetCaptcha}
-              getCaptchaButtonText={formatMessage({ id: 'user-login.form.get-captcha' })}
-              getCaptchaSecondText={formatMessage({ id: 'user-login.captcha.second' })}
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({ id: 'user-login.verification-code.required' }),
-                },
-              ]}
-            />
-          </Tab>
+            <Form.Item> 
+              
+
+          {/* 验证码 */}
+          
+              <Row>
+                
+                <Input
+                
+          type="text"
+          style={{width:170,height:40,float:'left'}}
+          value={inputCode}
+                  placeholder={'请输入验证码'}
+          onChange={e =>
+            this.setState({
+              inputCode: e.target.value
+            })
+          }
+                  
+                />
+          <div style={{float:'left',marginLeft:30}}>
+        <Captcha
+          
+          onClick={() => {
+            // 点击事件，用来从后台接口获取验证码等操作
+            this.changeCode();
+          }}
+          // 验证码
+          identifyCode={code}
+                  />
+                  </div>
+       </Row>
+       
+         </Form.Item>
+           
+            
+          </div>
           <div>
             <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
               <FormattedMessage id="user-login.login.remember-me" />
@@ -179,17 +216,10 @@ class Login extends Component<LoginProps, LoginState> {
             </a>
           </div>
           <Submit loading={submitting}>
+            
             <FormattedMessage id="user-login.login.login" />
           </Submit>
-          <div className={styles.other}>
-            <FormattedMessage id="user-login.login.sign-in-with" />
-            <Icon type="alipay-circle" className={styles.icon} theme="outlined" />
-            <Icon type="taobao-circle" className={styles.icon} theme="outlined" />
-            <Icon type="weibo-circle" className={styles.icon} theme="outlined" />
-            <Link className={styles.register} to="/user/register">
-              <FormattedMessage id="user-login.login.signup" />
-            </Link>
-          </div>
+          
         </LoginComponents>
       </div>
     );

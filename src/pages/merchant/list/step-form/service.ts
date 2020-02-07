@@ -7,9 +7,15 @@ export async function fakeSubmitForm(params: any) {
   });
 }
 
-// export async function updataimg(params: any) {
-//   return request('/server/api/file/upload', {
-//     method: 'POST',
-//     data: formData,
-//   });
-// }
+export async function queryFakeList(params: any) {
+  return request('/server/api/bn/channel/app-channel/list', {
+    method: 'POST',
+    data: params,
+  });
+}
+export async function updataimg(params: any) {
+  return request('/server/api/file/upload', {
+    method: 'POST',
+    data: params,
+  });
+}

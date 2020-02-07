@@ -1,11 +1,18 @@
 import { AnyAction, Reducer } from 'redux';
 
 import { EffectsCommandMap } from 'dva';
-import { fakeSubmitForm } from './service';
+import { fakeSubmitForm, queryFakeList, updataimg } from './service';
+import { file } from '@babel/types';
 
 export interface StateType {
+  queryagency?: string;
+
   current?: string;
+  saveimg?: string;
   step?: {
+    signedRatio: number;
+    signedType: integer;
+    status: integer;
     channelAttribute: string; //代理类型(1=个人，2=公司)
     referrer: string; //推荐人
     channelName: string; //代理商名称或姓名
@@ -27,6 +34,8 @@ export interface StateType {
     receiverAccount: string;
     receiverName: string;
     amount: string;
+
+    example_pic: string; // lizi
   };
 }
 
@@ -40,11 +49,18 @@ export interface ModelType {
   state: StateType;
   effects: {
     submitStepForm: Effect;
+    QueryAgency: Effect;
+    Updataimg: Effect;
   };
   reducers: {
     saveStepFormData: Reducer<StateType>;
+    saveStepForm: Reducer<StateType>;
     saveCurrentStep: Reducer<StateType>;
+    saveCurrent: Reducer<StateType>;
     queryList: Reducer<StateType>;
+    savequeryData: Reducer<StateType>;
+    saveimg: Reducer<StateType>;
+    changeExamplePic: Reducer<StateType>;
   };
 }
 
@@ -53,22 +69,34 @@ const Model: ModelType = {
 
   state: {
     current: 'info',
+    queryagency: '',
+    updated: '',
 
     step: {
-      payAccount: 'ant-design@alipay.com',
-      receiverAccount: 'test@example.com',
-      receiverName: 'Alex',
-      amount: '500',
+      payAccount: '',
+      receiverAccount: '',
+      receiverName: '',
+      amount: '',
+      example_pic: '',
     },
-    list:[]
+    example_pic: '',
   },
 
   effects: {
     *submitStepForm({ payload }, { call, put }) {
-     const response  = yield call(fakeSubmitForm, payload);
+      const response = yield call(fakeSubmitForm, payload);
       yield put({
         type: 'saveStepFormData',
         payload,
+      });
+      yield put({
+        type: 'saveStepForm',
+        payload,
+      });
+
+      yield put({
+        type: 'saveCurrent',
+        payload: 'confirm2',
       });
       yield put({
         type: 'saveCurrentStep',
@@ -76,12 +104,40 @@ const Model: ModelType = {
       });
       yield put({
         type: 'information',
-        payload:response,
+        payload: response,
+      });
+    },
+    *QueryAgency({ payload }, { call, put }) {
+      const response = yield call(queryFakeList, payload);
+
+      yield put({
+        type: 'savequeryData',
+        payload: response,
+      });
+    },
+    *Updataimg({ payload }, { call, put }) {
+      const response = yield call(updataimg, payload);
+
+      yield put({
+        type: 'saveimg',
+        updated: response,
       });
     },
   },
 
   reducers: {
+    savequeryData(state, { payload }) {
+      return {
+        ...state,
+        queryagency: payload.result.recods,
+      };
+    },
+    saveimg(state, { payload }) {
+      return {
+        ...state,
+        queryagency: payload,
+      };
+    },
     saveCurrentStep(state, { payload }) {
       return {
         ...state,
@@ -90,6 +146,25 @@ const Model: ModelType = {
     },
 
     saveStepFormData(state, { payload }) {
+      console.log('model payload');
+      console.log(payload);
+      console.log('model payload');
+
+      return {
+        ...state,
+        step: {
+          ...(state as StateType).step,
+          ...payload,
+        },
+      };
+    },
+    saveCurrent(state, { payload }) {
+      return {
+        ...state,
+        current: payload,
+      };
+    },
+    saveStepForm(state, { payload }) {
       return {
         ...state,
         step: {
@@ -101,10 +176,18 @@ const Model: ModelType = {
     queryList(state, { payload }) {
       return {
         ...state,
-        ...payload
+        ...payload,
+      };
+    },
+    changeExamplePic(state, { payload }) {
+      console.log('reducer');
+      console.log(payload);
 
-      }
-    }
+      return {
+        ...state,
+        example_pic: payload,
+      };
+    },
   },
 };
 

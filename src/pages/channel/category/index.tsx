@@ -1,171 +1,189 @@
-import { Button, Divider, Dropdown, Form, Icon, Menu, message } from 'antd';
-import React, { useState } from 'react';
+import { Button, Dropdown, Form, Icon, Menu, message } from 'antd';
+import React, { useRef, useState } from 'react';
 
 import { FormComponentProps } from 'antd/es/form';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import ProTable, { ProColumns, UseFetchDataAction } from '@ant-design/pro-table';
+import { GridContent } from '@ant-design/pro-layout';
+import ProTable, { ProColumns } from '@ant-design/pro-table';
+import { queryCategory, addAppCategory, updateCategory, removeCategory } from './service';
+
 import CreateForm from './components/CreateForm';
-import UpdateForm, { FormValueType } from './components/UpdateForm';
-import { TableListItem } from './data.d';
-// import { queryCategory } from './service';
-import { queryCategory, addAppCategory, removeCategory, updateCategory } from './service';
-interface TableListProps extends FormComponentProps {}
+
+interface ChannelCategoryProps extends FormComponentProps {}
 
 /**
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: FormValueType) => {
-  // debugger;
+const handleAdd = async fields => {
   const hide = message.loading('正在添加');
-  try {
-    await addAppCategory({
-      channelName: fields.channelName,
-      commissionType: fields.commissionType,
-      commissionRatio: fields.commissionRatio,
-      agentMoney: fields.agentMoney,
-    });
-    // debugger;
+  const response = await addAppCategory(fields);
+  if (response.code === 0) {
     hide();
     message.success('添加成功');
     return true;
-  } catch (error) {
-    hide();
-    message.error('添加失败请重试！');
-    return false;
   }
+  hide();
+  message.error(response.message);
+  return false;
 };
-
-/**
- * 更新节点
- * @param fields
- */
-const handleUpdate = async (fields: FormValueType) => {
-  const hide = message.loading('正在配置');
-  try {
-    await updateCategory({
-      channelName: fields.channelName,
-      commissionType: fields.commissionType,
-      commissionRatio: fields.commissionRatio,
-      agentMoney: fields.agentMoney,
-    });
+const handleUpdate = async fields => {
+  const hide = message.loading('正在更新');
+  const response = await updateCategory(fields);
+  if (response.code === 0) {
     hide();
-
-    message.success('配置成功');
+    message.success('更新成功');
     return true;
-  } catch (error) {
-    hide();
-    message.error('配置失败请重试！');
-    return false;
   }
+  hide();
+  message.error(response.message);
+  return false;
 };
 
 /**
  *  删除节点
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: TableListItem[]) => {
+const handleRemove = async selectedRows => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
-  try {
-    await removeCategory({
-      // alert(row.key);
-      key: selectedRows.map(row => row.key),
-    });
-    hide();
-    message.success('删除成功，即将刷新');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('删除失败，请重试');
-    return false;
+  const data = [];
+  // 遍历数组
+  for (let i = 0; i < selectedRows.length; i += 1) {
+    data.push({ channelType: selectedRows[i].channelType });
   }
+  const response = await removeCategory(data);
+  if (response.code === 0) {
+    const params = response.result;
+    let success = true;
+    let msg = '';
+    // 校验data与响应结果一致
+    for (let j = 0; j < data.length; j += 1) {
+      const id = data[j].channelType;
+      if (params[id] !== true) {
+        success = false;
+        msg = params[id].message!;
+        break;
+      }
+    }
+
+    if (success) {
+      hide();
+      message.success('删除成功，即将刷新');
+      return true;
+    }
+    hide();
+    message.error(msg);
+    return true;
+  }
+  hide();
+  message.error(response.message);
+  return false;
 };
 
-const TableList: React.FC<TableListProps> = () => {
-  const [createModalVisible, handleModalVisible] = useState<boolean>(false);
-  const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
-  const [stepFormValues, setStepFormValues] = useState({});
+const ChannelCategoryList: React.FC<ChannelCategoryProps> = () => {
+  const [entity, handleEntity] = useState<any>();
 
-  const [actionRef, setActionRef] = useState<UseFetchDataAction<{ data: TableListItem[] }>>();
-  const columns: ProColumns<TableListItem>[] = [
+  const [createModalVisible, handleModalVisible] = useState<boolean>(false);
+  const actionRef = useRef<ActionType>();
+
+  const columns: ProColumns<any>[] = [
     {
       title: '分类名称',
-      dataIndex: 'channelName',
+      dataIndex: 'name',
     },
     {
-      title: '代理金额',
+      title: '代理金额(元)',
       dataIndex: 'agentMoney',
       hideInSearch: true,
     },
     {
-      title: '返佣类型',
-      dataIndex: 'commissionType',
-      hideInSearch: true,
-      align: 'center',
-      initialValue: '',
-      valueEnum: {
-        1: { text: '返佣比例', status: 'Processing' },
-        2: { text: '返佣费率', status: 'Processing' },
-      },
+        title: '返佣类型',
+        dataIndex: 'commissionType',
+        valueEnum: {
+          1: { text: '按比例', status: 'Processing' },
+          2: { text: '固定费率', status: 'Success' },
+        },
     },
     {
-      title: '返佣比例',
-      dataIndex: 'commissionRatio',
-      hideInSearch: true,
+        title: '返佣比例',
+        dataIndex: 'commissionRatio',
+        render: (text, record) => <span>{record.commissionRatio}%</span>,
+        hideInSearch: true,
     },
     {
       title: '添加时间',
       dataIndex: 'createTime',
+      valueType: 'dateTime',
       hideInSearch: true,
+      align: 'center',
     },
     {
-      title: '代理数',
-      dataIndex: 'channelNumber',
-      hideInSearch: true,
+        title: '代理数',
+        dataIndex: 'channelCount',
+        sorter: true,
+        hideInSearch: true,
+        align: 'center',
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
+      align: 'center',
       render: (_, record) => (
         <>
-          {/* <a
-            onClick={() => {
-              handleUpdateModalVisible(true);
-              setStepFormValues(record);
-            }}
+          <Dropdown
+            overlay={
+              <Menu
+                onClick={async e => {
+                  const records = [record];
+                  // 删除
+                  if (e.key === 'remove') {
+                    // 提示删除
+                    await handleRemove(records);
+                    actionRef.current!.reload();
+                  }
+                }}
+                selectedKeys={[]}
+              >
+                <Menu.Item
+                  key="detail"
+                  onClick={async () => {
+                    handleEntity(record);
+                    handleModalVisible(true)
+                  }}
+                >
+                  <Icon type="info-circle" />
+                  编辑
+                </Menu.Item>
+                <Menu.Item key="remove">
+                  <Icon type="delete" />
+                  删除
+                </Menu.Item>
+              </Menu>
+            }
           >
-            编辑
-          </a>
-          &nbsp;&nbsp;&nbsp;&nbsp;
-          <a
-            onClick={() => {
-              handleUpdateModalVisible(true);
-              setStepFormValues(record);
-            }}
-          >
-            禁用
-          </a>
-          <Divider type="vertical" />
-          <a href="">分配角色</a> */}
+            <a>
+              更多 <Icon type="down" />
+            </a>
+          </Dropdown>
         </>
       ),
     },
   ];
 
   return (
-    <PageHeaderWrapper>
+    <GridContent>
       <ProTable<TableListItem>
-        headerTitle="查询代理商"
-        onInit={setActionRef}
+        headerTitle="代理商分类管理"
+        size="middle"
+        actionRef={actionRef}
         rowKey="channelType"
         pagination={{
           showSizeChanger: true,
         }}
         rowSelection="true"
         toolBarRender={(action, { selectedRows }) => [
-          <Button icon="plus" type="primary" onClick={() => handleModalVisible(true)}>
+          <Button icon="plus" type="primary" onClick={() => {handleEntity(null); handleModalVisible(true)}}>
             新建
           </Button>,
           selectedRows && selectedRows.length > 0 && (
@@ -175,12 +193,15 @@ const TableList: React.FC<TableListProps> = () => {
                   onClick={async e => {
                     if (e.key === 'remove') {
                       await handleRemove(selectedRows);
-                      action.reload();
+                      actionRef.current!.reload();
                     }
                   }}
                   selectedKeys={[]}
                 >
-                  <Menu.Item key="remove">批量删除</Menu.Item>
+                  <Menu.Item key="remove">
+                    <Icon type="delete" />
+                    删除
+                  </Menu.Item>
                 </Menu>
               }
             >
@@ -196,7 +217,11 @@ const TableList: React.FC<TableListProps> = () => {
           </div>
         )}
         request={async (params = {}) => {
-          const pagination = { current: params.current, size: params.pageSize };
+          const pagination = {
+            current: params.current,
+            size: params.pageSize,
+            orders: [{ column: 'id', asc: false }],
+          };
 
           delete params.current;
           delete params.pageSize;
@@ -214,37 +239,24 @@ const TableList: React.FC<TableListProps> = () => {
       />
       <CreateForm
         onSubmit={async value => {
-          const success = await handleAdd(value);
+          let success = false;
+          handleEntity(value);
+          if(value.channelType){
+            success = await handleUpdate(value);
+          }else {
+            success = await handleAdd(value);
+          }
           if (success) {
             handleModalVisible(false);
-            alert(success);
-            debugger;
-            // actionRef!.reload();
+            actionRef.current!.reload();
           }
         }}
+        entity={entity}
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
       />
-      {stepFormValues && Object.keys(stepFormValues).length ? (
-        <UpdateForm
-          onSubmit={async value => {
-            const success = await handleUpdate(value);
-            if (success) {
-              handleModalVisible(false);
-              setStepFormValues({});
-              // actionRef!.reload();
-            }
-          }}
-          onCancel={() => {
-            handleUpdateModalVisible(false);
-            setStepFormValues({});
-          }}
-          updateModalVisible={updateModalVisible}
-          values={stepFormValues}
-        />
-      ) : null}
-    </PageHeaderWrapper>
+    </GridContent>
   );
 };
 
-export default Form.create<TableListProps>()(TableList);
+export default Form.create<ChannelCategoryProps>()(ChannelCategoryList);

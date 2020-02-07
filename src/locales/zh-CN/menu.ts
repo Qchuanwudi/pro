@@ -73,4 +73,25 @@ export default {
   'menu.manage.merchantUser': '商户后台',
   'menu.manage.merchantUser.home': '首页',
   'menu.manage.merchantUser.list': '流水列表',
+
+  'menu.code_platform_home': '首页',
+  'menu.code_platform_channel': '代理商管理',
+  'menu.code_platform_channel.add': '添加代理',
+  'menu.code_platform_channel.list': '代理商列表',
+  'menu.code_platform_channel.category': '代理类型',
+  'menu.code_platform_channel_statement': '代理对账',
+  'menu.code_platform_merchant': '商户管理',
+  'menu.code_platform_merchant.add': '添加商户',
+  'menu.code_platform_merchant.list': '商户列表',
+  'menu.code_platform_merchant_statement': '商户对账',
+  'menu.code_channel_commission': '佣金结算',
+
+  'menu.code_channel_home': '首页',
+  'menu.code_channel_overview': '今日概览',
+  'menu.code_channel_merchant': '商户管理',
+  'menu.code_channel_merchant.add': '添加商户',
+  'menu.code_channel_merchant.list': '商户列表',
+
+  'menu.code_merchant_home': '首页',
+  'menu.code_merchant_bill': '订单记录',
 };

@@ -1,5 +1,6 @@
 import request from '@/utils/request';
 import { TableListParams } from './data.d';
+import debounce from 'lodash/debounce';
 
 export async function queryCategory(params?: TableListParams) {
   return request('/server/api/bn/channel/app-channel-type/list', {
@@ -8,15 +9,14 @@ export async function queryCategory(params?: TableListParams) {
   });
 }
 
-export async function removeCategory(params: { key: number[] }) {
+export async function removeCategory(params) { 
   return request('/server/api/bn/channel/app-channel-type/remove', {
     method: 'POST',
-    data: {
-      ...params,
-      method: 'delete',
-    },
+    data: params,
+    
   });
 }
+
 
 export async function addAppCategory(params: TableListParams) {
   return request('/server/api/bn/channel/app-channel-type/save', {
@@ -27,12 +27,17 @@ export async function addAppCategory(params: TableListParams) {
   });
 }
 
-export async function updateCategory(params: TableListParams) {
+export async function updateCategory(params) {
+  debugger;
   return request('/server/api/bn/channel/app-channel-type/edit', {
     method: 'POST',
-    data: {
-      ...params,
-      method: 'update',
-    },
+    data: params,
+  });
+}
+
+export async function queryCategoryById(params) {
+  return request('/server/api/bn/channel/app-channel-type/detail', {
+    method: 'POST',
+    data: params,
   });
 }

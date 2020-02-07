@@ -25,30 +25,6 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = props => {
 
   return (
     <div className={className}>
-      <HeaderSearch
-        className={`${styles.action} ${styles.search}`}
-        placeholder={formatMessage({
-          id: 'component.globalHeader.search',
-        })}
-        defaultValue="umi ui"
-        dataSource={[
-          formatMessage({
-            id: 'component.globalHeader.search.example1',
-          }),
-          formatMessage({
-            id: 'component.globalHeader.search.example2',
-          }),
-          formatMessage({
-            id: 'component.globalHeader.search.example3',
-          }),
-        ]}
-        onSearch={value => {
-          console.log('input', value);
-        }}
-        onPressEnter={value => {
-          console.log('enter', value);
-        }}
-      />
       <Tooltip
         title={formatMessage({
           id: 'component.globalHeader.help',
@@ -56,7 +32,7 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = props => {
       >
         <a
           target="_blank"
-          href="https://pro.ant.design/docs/getting-started"
+          href="http://admin.aiotpay.top/doc.html"
           rel="noopener noreferrer"
           className={styles.action}
         >
@@ -64,7 +40,20 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = props => {
         </a>
       </Tooltip>
       <Avatar />
-      <SelectLang className={styles.action} />
+      <Tooltip placement="bottom"
+        title={formatMessage({
+          id: 'component.globalHeader.website',
+        })}
+      >
+        <a
+          target="_blank"
+          href="http://www.aiotpay.top/"
+          rel="noopener noreferrer"
+          className={styles.action}
+        >
+          <Icon type="global" />
+        </a>
+      </Tooltip>
     </div>
   );
 };

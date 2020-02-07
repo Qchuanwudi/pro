@@ -2,6 +2,7 @@ import { Effect } from 'dva';
 import { Reducer } from 'redux';
 
 import { queryCurrent, query as queryUsers } from '@/services/user';
+import { redirectUrl } from '@/services/login';
 
 export interface CurrentUser {
   avatar?: string;
@@ -54,6 +55,18 @@ const UserModel: UserModelType = {
       if (response.code === 0) {
         const user = response.result;
         window.currentUser = user;
+
+        // 校验当前url是否为根路径，如是根路径获取首页URL接口
+        if(window.location.pathname === '/'){
+          // 获取重定向URL
+          const redirectResponse = yield call(redirectUrl, null);
+          if(redirectResponse.code === 0){
+            window.location.href = redirectResponse.result;
+            return;
+          }
+          return;
+        }
+
         yield put({
           type: 'saveCurrentUser',
           payload: {

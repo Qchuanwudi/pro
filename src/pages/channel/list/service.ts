@@ -19,13 +19,10 @@ export async function queryAppChannelById(channelId: TableListParams) {
   });
 }
 
-export async function removeChannel(params: { key: number[] }) {
+export async function removeChannel(params) {
   return request('/server/api/bn/channel/app-channel/remove', {
     method: 'POST',
-    data: {
-      ...params,
-      method: 'delete',
-    },
+    data: params,
   });
 }
 
@@ -38,16 +35,26 @@ export async function save(params: TableListParams) {
   });
 }
 
-export async function updateChannel(channelId: TableListParams) {
-  return request('/server/api/channel/app-channel/update', {
+export async function updateChannel(channelId: string, status: number) {
+  return request('/server/api/bn/channel/app-channel/edit', {
     method: 'POST',
     data: {
       // params,
       channelId: channelId,
-      status: 2,
+      status: status,
     },
   });
 }
+// export async function updateChannel(channelId: TableListParams) {
+//   return request('/server/api/bn/channel/app-channel/edit', {
+//     method: 'POST',
+//     data: {
+//       // params,
+//       channelId: channelId,
+//       status: 2,
+//     },
+//   });
+// }
 
 export async function updateAppChannelPassword(channelId: TableListParams) {
   return request('/server/api/channel/app-channel/updateAppChannelPassword', {

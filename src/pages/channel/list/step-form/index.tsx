@@ -7,6 +7,7 @@ import { StateType } from './model';
 import Step1 from './components/Step1';
 import Step2 from './components/Step2';
 import Step3 from './components/Step3';
+import Step4 from './components/Step4';
 import styles from './style.less';
 
 const { Step } = Steps;
@@ -23,8 +24,10 @@ class StepForm extends Component<StepFormProps> {
         return 0;
       case 'confirm':
         return 1;
-      case 'result':
+      case 'confirm2':
         return 2;
+      case 'result':
+        return 3;
       default:
         return 0;
     }
@@ -37,12 +40,14 @@ class StepForm extends Component<StepFormProps> {
       stepComponent = <Step2 />;
     } else if (currentStep === 2) {
       stepComponent = <Step3 />;
+    } else if (currentStep === 3) {
+      stepComponent = <Step4 />;
     } else {
       stepComponent = <Step1 />;
     }
     return (
-      <PageHeaderWrapper content="添加代理">
-        <Card bordered={false}>
+      <PageHeaderWrapper title="新增代理商" >
+        <Card bordered={false} >
           <>
             <Steps current={currentStep} className={styles.steps}>
               <Step title="基本信息" />
@@ -57,6 +62,6 @@ class StepForm extends Component<StepFormProps> {
   }
 }
 
-export default connect(({ formAndstepForm }: { formAndstepForm: StateType }) => ({
-  current: formAndstepForm.current,
+export default connect(({ channelAddForm }: { channelAddForm: StateType }) => ({
+  current: channelAddForm.current,
 }))(StepForm);

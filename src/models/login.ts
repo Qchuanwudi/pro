@@ -3,7 +3,7 @@ import { Effect } from 'dva';
 import { stringify } from 'querystring';
 import router from 'umi/router';
 
-import { fakeAccountLogin, getFakeCaptcha } from '@/services/login';
+import { fakeAccountLogin, getFakeCaptcha, redirectUrl } from '@/services/login';
 import { getPageQuery } from '@/utils/utils';
 
 export interface StateType {
@@ -49,6 +49,14 @@ const Model: LoginModelType = {
         localStorage.setItem('authorizotion', response.result);
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
+        // 获取重定向URL
+        const redirectResponse = yield call(redirectUrl, null);
+
+        if(redirectResponse.code === 0){
+          window.location.href = redirectResponse.result;
+          return;
+        }
+
         let { redirect } = params as { redirect: string };
         if (redirect) {
           const redirectUrlParams = new URL(redirect);

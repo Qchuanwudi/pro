@@ -1,11 +1,16 @@
 import { AnyAction, Reducer } from 'redux';
 
 import { EffectsCommandMap } from 'dva';
-import { BasicGood, selectAppMerchant } from './data.d';
+import { BasicGood, AccountInfo, AppChannelCommission, AppChannel, AppChannelType } from './data.d';
 import { queryBasicProfile } from './service';
 
 export interface StateType {
   basicGoods: BasicGood[];
+  accountInfo: AccountInfo;
+  appChannelCommission: AppChannelCommission[];
+  appChannel: AppChannel;
+  appChannelType: AppChannelType;
+
 }
 
 export type Effect = (
@@ -29,11 +34,18 @@ const Model: ModelType = {
 
   state: {
     basicGoods: [],
+    appChannelCommission: [],
+    appChannel: {},
+    accountInfo: {},
+    appChannelType: {},
+    
   },
 
   effects: {
     *fetchBasic({ payload }, { call, put }) {
+      // debugger;
       const response = yield call(queryBasicProfile, payload);
+      // debugger;
       yield put({
         type: 'show',
         payload: response,
@@ -43,9 +55,11 @@ const Model: ModelType = {
 
   reducers: {
     show(state, { payload }) {
+
+      // debugger;
       return {
         ...state,
-        ...payload,
+        ...payload.result,
       };
     },
   },

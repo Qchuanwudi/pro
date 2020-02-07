@@ -212,7 +212,7 @@ const TableList: React.FC<TableListProps> = () => {
             };
           }}
           rowKey="permissionId"
-          pagination={{ position: 'none' }}
+          // pagination={{ disabled: 'none' }}
           dateFormatter="string"
           headerTitle="菜单管理"
           rowSelection="true"

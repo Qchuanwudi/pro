@@ -1,12 +1,30 @@
-import { Badge, Card, Descriptions, Divider, Table, Row, Col, Input, Button } from 'antd';
+import {
+  Badge,
+  Card,
+  Descriptions,
+  Divider,
+  Table,
+  Row,
+  Col,
+  Input,
+  FormItem,
+  Button,
+  Icon,
+  Form,
+  Modal,
+} from 'antd';
 import React, { Component } from 'react';
-
+import { FormComponentProps } from 'antd/es/form';
 import { Dispatch } from 'redux';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
-import { BasicProfileDataType } from './data.d';
+const FormItem = Form.Item;
+import { BasicProfileDataType, records } from './data.d';
 import styles from './style.less';
-import { queryBasicProfile } from './service';
+import svg from '../../list/components/uploader/u1498.svg';
+import ProTable, { ProColumns, UseFetchDataAction } from '@ant-design/pro-table';
+import { queryBasicProfile, queryimg, querysignacontractlist } from './service';
+import { async } from 'q';
 
 const progressColumns = [
   {
@@ -48,104 +66,110 @@ interface BasicProps {
   dispatch: Dispatch<any>;
   profileAndbasic: BasicProfileDataType;
 }
-interface BasicState {
-  visible: boolean;
-}
-
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-    render: text => <a>{text}</a>,
-    width: 150,
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
-    width: 80,
-  },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address 1',
-    ellipsis: true,
-  },
-  {
-    title: 'Long Column Long Column Long Column',
-    dataIndex: 'address',
-    key: 'address 2',
-    ellipsis: true,
-  },
-  {
-    title: 'Long Column Long Column',
-    dataIndex: 'address',
-    key: 'address 3',
-    ellipsis: true,
-  },
-  {
-    title: 'Long Column',
-    dataIndex: 'address',
-    key: 'address 4',
-    ellipsis: true,
-  },
-];
-
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park, New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 2 Lake Park, London No. 2 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park, Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
 
 class Basic extends Component<BasicProps, BasicState> {
   state = {
-    data: '',
+    display: 'block',
+    none: 'none',
+    Payrates: 'none',
+    inputbox: 'none',
+    record: [],
   };
 
   componentDidMount() {
     // this.queryBasic();
     const { dispatch } = this.props;
+    // console.log(this.props.location.query.channelId)
+
     dispatch({
       type: 'profileAndbasic/fetchBasic',
       payload: {
-        merchantId: this.props.location.query.id,
+        merchantId: this.props.location.query.channelId,
+      },
+    });
+
+    dispatch({
+      type: 'profileAndbasic/fetch',
+      payload: {
+        size: 5,
+        total: 50,
       },
     });
   }
 
-  // queryBasic = async () => {
-  //   const id = this.props.location.query.id;
-  //   console.log(id);
-  //   const Profile = await queryBasicProfile(id);
-  //   this.setState({
-  //     data: Profile.result.appMerchant,
-  //   });
-  // };
+  showModal = async () => {
+    this.setState({
+      display: 'none',
+    });
+    if (this.state.display) {
+      this.setState({
+        none: 'block',
+      });
+    }
+  };
+
+  handleOk = e => {
+    console.log(e);
+    this.setState({
+      visible: false,
+    });
+  };
+
+  handleCancel = e => {
+    console.log(e);
+    this.setState({
+      visible: false,
+    });
+  };
+
+  chang_image =  () => {
+   if (profileAndbasic.businessLicenseAuthPic) {
+     
+   }
+  };
+
+
+
 
   render() {
-    console.log(data);
+    console.log(this.props);
+    const columns: ProColumns<records>[] = [
+      {
+        title: '序号 ',
+        dataIndex: '1',
+        key: '2',
+        width: 80,
+        ellipsis: true,
+      },
+      {
+        title: '设备型号',
+        dataIndex: 'deviceModel',
+        key: '1',
+        width: 150,
+        ellipsis: true,
+      },
+      
+      {
+        title: '设备编号',
+        dataIndex: 'deviceSerialNumber',
+        key: '3',
+        ellipsis: true,
+      },
+      {
+        title: '绑定时间',
+        dataIndex: 'createTime',
+        key: '4',
+        ellipsis: true,
+      },
+    ];
 
-    const { profileAndbasic, loading } = this.props;
-    const { basicGoods, basicProgress } = profileAndbasic;
+    const { getFieldDecorator } = this.props.form;
+    const { profileAndbasic, data } = this.props;
+    const { basicGoods, accountInfo, records } = profileAndbasic;
+    console.log(data);
+    console.log(profileAndbasic);
+    console.log(records);
+
     let goodsData: typeof basicGoods = [];
     if (basicGoods.length) {
       let num = 0;
@@ -238,69 +262,134 @@ class Basic extends Component<BasicProps, BasicState> {
     return (
       <PageHeaderWrapper>
         <Card bordered={false}>
-          <Descriptions title={data.merchantName}>{data.merchantName}</Descriptions>
+          <Descriptions></Descriptions>
           <Descriptions title="基本信息" style={{ marginBottom: 32 }}>
-            <Descriptions.Item label="企业名称">1000000000</Descriptions.Item>
-            <Descriptions.Item label="企业简称">1000000000</Descriptions.Item>
-            <Descriptions.Item label="所属代理">1000000000</Descriptions.Item>
-            <Descriptions.Item label="取货单号">1000000000</Descriptions.Item>
-            <Descriptions.Item label="取货单号">1000000000</Descriptions.Item>
-            <Descriptions.Item label="取货单号">1000000000</Descriptions.Item>
-            <Descriptions.Item label="状态">已取货</Descriptions.Item>
-            <Descriptions.Item label="销售单号">1234123421</Descriptions.Item>
-            <Descriptions.Item label="子订单">3214321432</Descriptions.Item>
+            <Descriptions.Item label="企业名称">{profileAndbasic.merchantName}</Descriptions.Item>
+            <Descriptions.Item label="企业简称">
+              {profileAndbasic.storeAbbreviation}
+            </Descriptions.Item>
+            <Descriptions.Item label="所属代理">{profileAndbasic.merchantId}</Descriptions.Item>
+            <Descriptions.Item label="注册地址">
+              {profileAndbasic.registeredAddress}
+            </Descriptions.Item>
+            <Descriptions.Item label="行业分类">{profileAndbasic.industryCode}</Descriptions.Item>
+            <Descriptions.Item label="营业执照号">
+              {profileAndbasic.businessLicenseNo}
+            </Descriptions.Item>
+            <Descriptions.Item label="店铺地址">
+              {profileAndbasic.businessLicenseNo}
+            </Descriptions.Item>
+            <Descriptions.Item label="支付宝签约账号">1234123421</Descriptions.Item>
+            <Descriptions.Item label="微信签约账号">3214321432</Descriptions.Item>
           </Descriptions>
           <Divider style={{ marginBottom: 32 }} />
           <Descriptions title="法人及对公账户信息" style={{ marginBottom: 32 }}>
-            <Descriptions.Item label="法人姓名">付小小</Descriptions.Item>
-            <Descriptions.Item label="证件类型">18100000000</Descriptions.Item>
-            <Descriptions.Item label="证件号码">菜鸟仓储</Descriptions.Item>
-            <Descriptions.Item label="开户银行">浙江省杭州市西湖区万塘路18号</Descriptions.Item>
-            <Descriptions.Item label="开户支行">无</Descriptions.Item>
-            <Descriptions.Item label="公司银行账户">无</Descriptions.Item>
+            <Descriptions.Item label="法人姓名">{profileAndbasic.legalName}</Descriptions.Item>
+            <Descriptions.Item label="证件类型">{profileAndbasic.legalIdType === '1' ? '身份证': profileAndbasic.legalIdType === '2' ? '护照' : '港澳台'}</Descriptions.Item>
+            <Descriptions.Item label="证件号码">{profileAndbasic.legalIdNumber}</Descriptions.Item>
+            <Descriptions.Item label="开户银行">{profileAndbasic.openBank}</Descriptions.Item> */}
+            <Descriptions.Item label="开户支行">
+              {profileAndbasic.openBankAccount}
+            </Descriptions.Item>
+            <Descriptions.Item label="公司银行账户">
+              {profileAndbasic.companyBankAccount}
+            </Descriptions.Item>
           </Descriptions>
           <Divider style={{ marginBottom: 32 }} />
 
           <Descriptions title="联系人信息" style={{ marginBottom: 32 }}>
-            <Descriptions.Item label="联系人姓名">付小小</Descriptions.Item>
-            <Descriptions.Item label="联系人电话">18100000000</Descriptions.Item>
-            <Descriptions.Item label="联系人地址">菜鸟仓储</Descriptions.Item>
+            <Descriptions.Item label="联系人姓名">{profileAndbasic.contact}</Descriptions.Item>
+            <Descriptions.Item label="联系人电话">{profileAndbasic.phone}</Descriptions.Item>
+            <Descriptions.Item label="联系人地址">{accountInfo.address}</Descriptions.Item>
           </Descriptions>
           <Divider style={{ marginBottom: 32 }} />
           <Descriptions title="账号信息" style={{ marginBottom: 32 }}>
-            <Descriptions.Item label="商户编号">付小小</Descriptions.Item>
-            <Descriptions.Item label="商户账号">18100000000</Descriptions.Item>
+            <Descriptions.Item label="商户编号">{profileAndbasic.merchantCode}</Descriptions.Item>
+            <Descriptions.Item label="商户账号">{accountInfo.username}</Descriptions.Item>
           </Descriptions>
           <Divider style={{ marginBottom: 32 }} />
-
           <div className={styles.title}>退货商品</div>
-
           <Row>
             <Col className="支付宝" span={10}>
               <div style={{ background: '#ECECEC', padding: '18px' }}>
-                <Card title="支付宝" bordered={false} style={{ width: 500, height: 500 }}>
+                <Card
+                  title="支付宝"
+                  bordered={false}
+                  style={{ width: 500, height: 500, position: 'relative' }}
+                >
+                  <span style={{ position: 'absolute', top: 15, left: 360 }}>未开通</span>
                   <Row>
                     <Col span={4}>
-                      <p>支付费率：</p>
+                      <p style={{ display: this.state.Payrates }}>支付费率：</p>
                       <p>刷脸支付：</p>
                       <p>扫码支付：</p>
                     </Col>
                     <Col span={5}>
-                      <Input defaultValue="0571" />
+                      <Form>
+                         
+                        <FormItem>
+                          {getFieldDecorator('username2', {
+                            rules: [
+                              {
+                                required: false,
+                                pattern: new RegExp(
+                                  /^((0\.[2-9](\d*))|(([1-9](\d*)(\.))(\d+))|([1-9](\d*)))$/,
+                                ),
+                                message: '您输入的费率有误',
+                              },
+                            ],
+                          })(
+                            <Input
+                              style={{ display: this.state.inputbox }}
+                              prefix={<Icon type="user2" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            />,
+                          )}
+                        </FormItem>
+                      </Form>
                     </Col>
                     <Col span={5}>
-                      <a>%</a>
+                      <span
+                        style={{ marginTop: 10, marginLeft: 5, display: this.state.inputbox }}
+                        className="ant-form-text"
+                      >
+                        %
+                      </span>
                     </Col>
                   </Row>
-                  <div style={{ marginTop: 200, marginLeft: 150 }}>
-                    <Button size="large" type="primary">
+                  {/* 支付宝扫码授权 */}
+                  <div style={{ width: 50, marginTop: 200, marginLeft: 150, position: 'relative' }}>
+                    <Button
+                      size="large"
+                      type="primary"
+                      style={{ display: this.state.display }}
+                      onClick={this.showModal}
+                    >
                       申请授权
                     </Button>
+                    <div
+                      style={{
+                        display: this.state.none,
+                        width: 200,
+                        height: 150,
+                        position: 'absolute',
+                        top: -180,
+                        left: -40,
+                        textAlign: 'center',
+                      }}
+                    >
+                      <a>使用支付宝扫描二维码</a>
+                      <img
+                        style={{ width: 200, height: 200 }}
+                        alt="example"
+                        src={`/server/api/merchant/app-merchant/auth/qrcode/${profileAndbasic.merchantId}`}
+                      />
+                    </div>
                   </div>
                 </Card>
               </div>
               ,
             </Col>
+
             <Col className="gutter-row" span={14}>
               <div style={{ background: '#ECECEC', padding: '18px' }}>
                 <Card title="微信" bordered={false} style={{ width: 500, height: 500 }}>
@@ -311,20 +400,97 @@ class Basic extends Component<BasicProps, BasicState> {
                       <p>扫码支付：</p>
                     </Col>
                     <Col span={5}>
-                      <Input defaultValue="0571" />
+                      <Form>
+                         
+                        <FormItem>
+                          {getFieldDecorator('username1', {
+                            rules: [
+                              {
+                                required: true,
+                                pattern: new RegExp(
+                                  /^((0\.[2-9](\d*))|(([1-9](\d*)(\.))(\d+))|([1-9](\d*)))$/,
+                                ),
+                                message: '您输入的费率有误',
+                              },
+                            ],
+                          })(
+                            <Input
+                              prefix={<Icon type="user1" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            />,
+                          )}
+                        </FormItem>
+                      </Form>
                     </Col>
-                    <Col span={5}>
-                      <a>%</a>
-                    </Col>
+                    <span style={{ marginTop: 10, marginLeft: 5 }} className="ant-form-text">
+                      %
+                    </span>
                   </Row>
+                  <a>绑定的微信为：xxxxx</a>
                 </Card>
               </div>
               ,
             </Col>
           </Row>
-          <div className={styles.title}>退货进度</div>
+          <div className={styles.title}>设备信息</div>
 
-          <Table columns={columns} dataSource={data} />
+          <Table columns={columns} dataSource={records} />
+          <div className={styles.title}>设备信息</div>
+          <Card>
+            {/* 图片信息   */}
+            <Row gutter={[16, 16]}>
+              <Col span={5}>
+              {profileAndbasic.businessLicenseAuthPic && <img
+                  className={styles.imagebusinessLicenseAuthPic}
+                  src={profileAndbasic.businessLicenseAuthPic}
+                  alt="示例图片"
+                />}
+                {profileAndbasic.businessLicenseAuthPic && <Col>营业执照</Col>}
+              </Col>
+
+              <Col span={5} style={{}} onChange={this.chang_image}>
+                {profileAndbasic.legalIdentityCardFront && <img
+                  className={styles.imagebusinessLicenseAuthPic}
+                  src={profileAndbasic.legalIdentityCardFront}
+                  alt="示例图片"
+                />}
+                {profileAndbasic.legalIdentityCardFront && <Col>法人身份证正面</Col>}
+              </Col>
+              <Col span={5}>
+                {profileAndbasic.legalIdentityCardBack &&<img
+                  className={styles.imagebusinessLicenseAuthPic}
+                  src={profileAndbasic.legalIdentityCardBack}
+                  alt="示例图片"
+                />}
+                {profileAndbasic.legalIdentityCardBack && <Col>法人身份证反面</Col>}
+              </Col>
+              <Col span={5}>
+                {/* <img src={svg} alt="示例图片" />
+                <Col>行业许可证照片</Col> */}
+              </Col>
+            </Row>
+            <Row gutter={[16, 16]}>
+              <Col span={5}>
+                {profileAndbasic.storeFront && <img
+                  className={styles.imagebusinessLicenseAuthPic}
+                  src={profileAndbasic.storeFront}
+                  alt="示例图片"
+                />}
+                {profileAndbasic.storeFront && <Col>门头照片</Col>}
+              </Col>
+              <Col span={5}>
+                {/* <img src={svg} alt="示例图片" />
+                <Col>店铺内景1</Col> */}
+              </Col>
+              <Col span={5}>
+                {/* <img src={svg} alt="示例图片" />
+                <Col>店铺内景2</Col> */}
+              </Col>
+              <Col span={5}>
+                {/* <img src={svg} alt="示例图片" />
+                <Col>店铺内景3</Col> */}
+              </Col>
+            </Row>
+          </Card>
         </Card>
       </PageHeaderWrapper>
     );
@@ -344,4 +510,4 @@ export default connect(
     profileAndbasic,
     loading: loading.effects['profileAndbasic/fetchBasic'],
   }),
-)(Basic);
+)(Form.create()(Basic));

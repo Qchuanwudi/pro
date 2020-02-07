@@ -81,6 +81,6 @@ const getProfileBasicData = {
   basicProgress,
 };
 
-// export default {
-//   'GET  /api/profile/basic': getProfileBasicData,
-// };
+export default {
+  'GET  /api/profile/basic': getProfileBasicData,
+};

@@ -1,54 +1,192 @@
-import { Button, Result, Descriptions, Statistic } from 'antd';
-import React from 'react';
+import { Form, Icon, Input, Card, message, Button } from 'antd';
+import React, { Component } from 'react';
 import { Dispatch } from 'redux';
+import { FormComponentProps } from 'antd/es/form';
 import { connect } from 'dva';
+import { router } from 'umi';
+
+const FormItem = Form.Item;
 import { StateType } from '../../model';
 import styles from './index.less';
 
-interface Step3Props {
-  data?: StateType['step'];
-  dispatch?: Dispatch<any>;
-}
-
-const Step3: React.FC<Step3Props> = props => {
-  const { data, dispatch } = props;
-  if (!data) {
-    return null;
-  }
-  const { payAccount, receiverAccount, receiverName, amount } = data;
-  const onFinish = () => {
-    if (dispatch) {
-      dispatch({
-        type: 'formAndstepForm/saveCurrentStep',
-        payload: 'info',
-      });
-    }
-  };
-  const information = (
-    <div className={styles.information}>
-    </div>
-  );
-  const extra = (
-    <>
-      <Button type="primary" onClick={onFinish}>
-        继续商户
-      </Button>
-      {/*<Button>查看账单</Button>*/}
-    </>
-  );
-  return (
-    <Result
-      status="success"
-      title="操作成功"
-      subTitle="预计两小时内到账"
-      extra={extra}
-      className={styles.result}
-    >
-      {information}
-    </Result>
-  );
+const formItemLayout = {
+  labelCol: {
+    span: 5,
+  },
+  wrapperCol: {
+    span: 19,
+  },
 };
 
-export default connect(({ formAndstepForm }: { formAndstepForm: StateType }) => ({
-  data: formAndstepForm.step,
-}))(Step3);
+interface Step3Props extends FormComponentProps {
+  data?: StateType['step'];
+  dispatch?: Dispatch<any>;
+  submitting?: boolean;
+}
+
+class Step3 extends Component<Step3Props> {
+  state = {
+    value1: '',
+    value2: '',
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+      }
+    });
+  };
+  handleMaxBackUp = () => {
+    if (event && event.target && event.target.value) {
+      let value = event.target.value;
+      this.setState(() => ({ value1: value }));
+    }
+  };
+  //在输入框发生变化的时候修改状态的值
+  handleMaxRestoreUp = e => {
+    if (event && event.target && event.target.value) {
+      let value = event.target.value;
+      this.setState(() => ({ value2: value }));
+    }
+    e.preventDefault();
+  };
+
+  render() {
+    const { data, dispatch } = this.props;
+    console.log('rednder formData');
+    console.log(data);
+    console.log('rednder formData');
+
+    const { username } = this.state.value1;
+    const { getFieldDecorator, getFieldsValue, validateFields } = this.props.form;
+
+    const onPrev = (e: React.FormEvent) => {
+      validateFields((err: any, values: StateType['step']) => {
+        if (dispatch) {
+          const values = getFieldsValue();
+          dispatch({
+            type: 'formAndstepForm/submitStepForm',
+            payload: {
+              ...data,
+              accountInfo: {
+                password: this.state.value2,
+                roleId: '',
+                roleType: 0,
+                storeId: '77ww7',
+                sysUserId: '123',
+                userId: '',
+                username: this.state.value1,
+              },
+              address: '',
+              appMerchantPaywayList: [
+                {
+                  createBy: '',
+                  createTime: '',
+                  isDeleted: true,
+                  merchantId: '123',
+                  paywayAccount: '123',
+                  paywayBank: '123',
+                  paywayCity: '123',
+                  paywaySubBank: '123',
+                  paywayType: 0,
+                  status: 0,
+                },
+              ],
+              appMerchantSignedList: [],
+              legalName: '1',
+              merchantCode: '1',
+              merchantId: '1',
+            },
+          });
+        }
+      });
+    };
+
+    const onPrev3 = () => {
+      const { dispatch } = this.props;
+
+      if (dispatch) {
+        dispatch({
+          type: 'formAndstepForm/saveCurrentStep',
+          payload: 'info',
+        });
+      }
+    };
+    return (
+      <div style={{ margin: 0, position: 'relative' }}>
+        <Card style={{ marginTop: 10, margin: 0,height:200 }}>
+          <Form style={{ width: 300, textAlign: 'center', marginLeft: 570 }}>
+            <FormItem>
+              {getFieldDecorator('username', {
+                rules: [
+                  {
+                    required: true,
+                    message: '请输入您的用户名，由字母数字组成!',
+                    // pattern: new RegExp(/^[0-9,a-z]\d*$/, "g"),
+                  },
+                ],
+                getValueFromEvent: event => {
+                  return event.target.value.replace(/[\u4E00-\u9FA5]/g, '');
+                },
+                initialValue: '',
+              })(
+                <Input
+                  prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  placeholder="请输入初始账号"
+                  onChange={event => this.handleMaxBackUp(event)}
+                />,
+              )}
+            </FormItem>
+
+            <Form.Item>
+              {getFieldDecorator('请输入初始密码', {
+                rules: [{ required: true, message: 'Please input your Password!' }],
+              })(
+                <Input
+                  prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  type="password"
+                  placeholder="请输入密码"
+                  onChange={event => this.handleMaxRestoreUp(event)}
+                />,
+              )}
+            </Form.Item>
+          </Form>
+          <Button
+          type="primary"
+          onClick={onPrev}
+          style={{ position: 'absolute', top: 150, left: 600 ,width:97}}
+        >
+          添加
+        </Button>
+        <Button
+          type="primary"
+          onClick={onPrev3}
+          style={{ position: 'absolute', top: 150, left: 800 }}
+        >
+          取消添加
+        </Button>
+        </Card>
+      </div>
+    );
+  }
+}
+
+export default connect(
+  ({
+    formAndstepForm,
+    loading,
+  }: {
+    formAndstepForm: StateType;
+    loading: {
+      effects: { [key: string]: boolean };
+    };
+  }) => {
+    console.log(formAndstepForm);
+    return {
+      submitting: loading.effects['formAndstepForm/submitStepForm'],
+      data: formAndstepForm.step,
+    };
+  },
+)(Form.create<Step3Props>()(Step3));

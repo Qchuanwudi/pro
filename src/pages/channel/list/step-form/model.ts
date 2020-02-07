@@ -1,45 +1,61 @@
 import { AnyAction, Reducer } from 'redux';
 
 import { EffectsCommandMap } from 'dva';
-import { fakeSubmitForm } from './service';
+import { fakeSubmitForm, queryFakeList, queryType } from './service';
 
 export interface StateType {
+  queryagency?: string;
   current?: string;
   step?: {
-    
-    merchantName: string; //企业名称
-    storeAbbreviation: string; //企业简称
-    channelId: string; //所属代理
-    industryCode: string; //行业分类
-    businessLicenseNo: string; //营业执照号码
-    registeredAddress: string; //注册地址
-    storeAddress: string; //店铺地址
-    aliCommissionAccount: string; //支付宝签约账号
-    wxCommissionAccount: string; //微信签约账号
-    legalName: string; //法人姓名
-    legalIdType: string; //证件类型1身份证2护照3港澳台
-    legalIdNumber: string; //证件号码
-    openBank: string; //开户银行
-    openCity: string; //开户城市
-    openBankAccount: string; //开户支行
-    companyBankAccount: string; //公司银行账号
-    contact: string; //联系人
-    phone: string; //联系电话
-    address: string; //联系地址
-    loginId: string; //账号
-    loginPwd: string; //密码
-
-    businessLicensePic: string; //营业执照图片
-    legalIdentityCardFront: string; //法人身份证正面
-    legalIdentityCardBack: string; //法人身份证背面
-    storeFront: string; //门头照片
-    storeInterior: string; //店铺内景
-    businessLicenseAuthPic: string; //营业执照授权函图片
-
-    payAccount: string;
-    receiverAccount: string;
-    receiverName: string;
-    amount: string;
+    // userId: '',//userID
+    // channelAttribute: '', //代理类型(1=个人，2=公司)
+    // channelId: '', //所属代理
+    // channelName: '', //企业名称
+    // channelType: '', //代理类型
+    // referrer: '', //推荐人
+    // status: '',
+    // legalIdNumber: '', //证件号码
+    // contact: '', //联系人
+    // phone: '', //联系电话
+    // address: '', //联系地址
+    // aliCommissionAccount: '', //支付号佣账号
+    // wxCommissionAccount: '', //微信佣账号
+    // bankCommissionAccount: '', //银行佣账号
+    // thirdCommissionAccount: '', //第三方佣账号
+    // commissionType: '',//返佣类型
+    // commissionRatio: '',//返佣比例
+    // loginId: '', //账号
+    // loginPwd: '', //密码
+    // accountInfo: {
+    //   password: string,
+    //   storeId: string,
+    //   username: string,
+    // },
+    // appChannelCommissionList: [
+    //   {
+    //     agentMoney: 0,
+    //     channelId: "",
+    //     commissionAccount: "",
+    //     commissionChannel: 0,
+    //     commissionRatio: 0,
+    //     commissionType: 0,
+    //     createBy: "",
+    //     createTime: "",
+    //     isDeleted: true,
+    //     updateBy: "",
+    //     updateTime: "",
+    //   }
+    // ],
+    // businessLicensePic: string; //营业执照图片
+    // legalIdentityCardFront: string; //法人身份证正面
+    // legalIdentityCardBack: string; //法人身份证背面
+    // storeFront: string; //门头照片
+    // storeInterior: string; //店铺内景
+    // businessLicenseAuthPic: string; //营业执照授权函图片
+    // payAccount: string;
+    // receiverAccount: string;
+    // receiverName: string;
+    // amount: string;
   };
 }
 
@@ -53,42 +69,151 @@ export interface ModelType {
   state: StateType;
   effects: {
     submitStepForm: Effect;
+    submitQueryChannel: Effect;
+    QueryAgency: Effect;
+    queryType: Effect;
   };
   reducers: {
     saveStepFormData: Reducer<StateType>;
     saveCurrentStep: Reducer<StateType>;
     saveCurrentStep2: Reducer<StateType>;
+    ChannelList: Reducer<StateType>;
+    savequeryData: Reducer<StateType>;
+    savequeryType: Reducer<StateType>;
   };
 }
-
+// channelAddForm
 const Model: ModelType = {
-  namespace: 'formAndstepForm',
+  namespace: 'channelAddForm',
 
   state: {
     current: 'info',
+    queryagency: '',
     step: {
-      payAccount: 'ant-design@alipay.com',
-      receiverAccount: 'test@example.com',
-      receiverName: 'Alex',
-      amount: '500',
+      userId: '', //userID
+      channelAttribute: '', //代理类型(1=个人，2=公司)
+      channelId: '', //所属代理
+      channelName: '', //企业名称
+      channelType: '', //代理类型
+      referrer: '', //推荐人
+      status: '',
+      legalIdNumber: '', //证件号码
+      contact: '', //联系人
+      phone: '', //联系电话
+      address: '', //联系地址
+      aliCommissionAccount: '', //支付号佣账号
+      wxCommissionAccount: '', //微信佣账号
+      bankCommissionAccount: '', //银行佣账号
+      thirdCommissionAccount: '', //第三方佣账号
+      commissionType: '', //返佣类型
+      commissionRatio: '', //返佣比例
+      loginId: '', //账号
+      loginPwd: '', //密码
+      accountInfo: {
+        password: '',
+        storeId: '',
+        username: '',
+      },
+      appChannelCommissionList: [
+        {
+          agentMoney: '',
+          channelId: '',
+          commissionAccount: '',
+          commissionChannel: '',
+          commissionRatio: '',
+          commissionType: '',
+          createBy: '',
+          createTime: '',
+          isDeleted: '',
+          updateBy: '',
+          updateTime: '',
+        },
+      ],
     },
   },
 
   effects: {
     *submitStepForm({ payload }, { call, put }) {
-      yield call(fakeSubmitForm, payload);
+      //代理商返佣信息表，账号分别储存
+      let appChannelCommissionList = [];
+      if (payload.aliCommissionAccount) {
+        appChannelCommissionList.push({
+          commissionAccount: payload.aliCommissionAccount,
+          commissionChannel: '1',
+        });
+      }
+      if (payload.wxCommissionAccount) {
+        appChannelCommissionList.push({
+          commissionAccount: payload.wxCommissionAccount,
+          commissionChannel: '2',
+        });
+      }
+      if (payload.bankCommissionAccount) {
+        appChannelCommissionList.push({
+          commissionAccount: payload.bankCommissionAccount,
+          commissionChannel: '3',
+        });
+      }
+      if (payload.thirdCommissionAccount) {
+        appChannelCommissionList.push({
+          commissionAccount: payload.thirdCommissionAccount,
+          commissionChannel: '4',
+        });
+      }
+      payload.appChannelCommissionList = appChannelCommissionList;
+
+      const response = yield call(fakeSubmitForm, payload);
       yield put({
         type: 'saveStepFormData',
-        payload,
+        payload: response,
       });
       yield put({
         type: 'saveCurrentStep',
         payload: 'result',
       });
     },
+    *QueryAgency({ payload }, { call, put }) {
+      const response = yield call(queryFakeList, payload);
+      yield put({
+        type: 'savequeryData',
+        payload: response,
+      });
+    },
+    *queryType({ payload }, { call, put }) {
+      const response = yield call(queryType, payload);
+      yield put({
+        type: 'savequeryType',
+        payload: response,
+      });
+    },
+    *submitQueryChannel({ payload }, { call, put }) {
+      yield call(queryChannel, payload);
+      yield put({
+        type: 'ChannelList',
+        payload,
+      });
+    },
   },
 
   reducers: {
+    savequeryData(state, { payload }) {
+      return {
+        ...state,
+        queryagency: payload,
+      };
+    },
+    savequeryType(state, { payload }) {
+      return {
+        ...state,
+        queryagency: payload,
+      };
+    },
+    ChannelList(state, { payload }) {
+      return {
+        ...state,
+        current: payload,
+      };
+    },
     saveCurrentStep(state, { payload }) {
       return {
         ...state,

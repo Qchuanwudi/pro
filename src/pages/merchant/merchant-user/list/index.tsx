@@ -1,20 +1,51 @@
-import { Form} from 'antd';
-import React, { useState } from 'react';
+import { Form, message , Result, Button} from 'antd';
+import React, { useState, useRef } from 'react';
 
 import { FormComponentProps } from 'antd/es/form';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, UseFetchDataAction } from '@ant-design/pro-table';
 import { TableListItem } from './data.d';
-import { merchantsBillsDetails} from './service';
-import router from 'umi/router';
-interface TableListProps extends FormComponentProps {}
+import { merchantsBillsDetails, merchantRefundOrder } from './service';
+import OrderForm from './components/OrderForm';
+import ResultForm from './components/ResultForm';
 
+import router from 'umi/router';
+import ReactDOM from 'react-dom';
+interface TableListProps extends FormComponentProps { }
 
 const TableList: React.FC<TableListProps> = () => {
+
+  const actionRef = useRef<ActionType>();
+  const [entity, handleEntity] = useState<any>();
+  const [resultOrder, handleEntity2] = useState<any>();
+  const [createModalVisible, handleModalVisible] = useState<boolean>(false);
+  const [createModalVisible2, handleModalVisible2] = useState<boolean>(false);
+  /**
+   * 退款
+   * @param fields
+   */
+  const refundOrder = async fields => {
+    
+    const hide = message.loading('正在退款');
+    const response = await merchantRefundOrder(fields);
+    handleEntity2(response),
+    handleModalVisible2(true)
+    debugger;
+    if (response.code === 0) {
+      hide();
+      message.success('退款成功');
+      return true;
+    }
+    debugger;
+    hide();
+    message.error(response.message);
+    return true;
+  };
   const columns: ProColumns<TableListItem>[] = [
     {
       title: '订单时间',
       dataIndex: 'createTime',
+      valueType: 'dateTime',
     },
     {
       title: '订单号',
@@ -28,7 +59,7 @@ const TableList: React.FC<TableListProps> = () => {
     },
     {
       title: '商品详情',
-      dataIndex: 'goodsList',
+      dataIndex: 'goodsList.goodsName',
       hideInSearch: true,
     },
     {
@@ -43,7 +74,7 @@ const TableList: React.FC<TableListProps> = () => {
     },
     {
       title: '实付金额',
-      dataIndex: 'actualAmount',
+      dataIndex: 'buyerPayAmount',
       hideInSearch: true,
     },
     {
@@ -53,22 +84,12 @@ const TableList: React.FC<TableListProps> = () => {
       align: 'center',
       initialValue: '',
       valueEnum: {
-        "01": { text: '刷脸支付', status: 'Processing' },
-        "02": { text: '扫码支付', status: 'Processing' },
-        "03": { text: '刷卡支付', status: 'Processing' },
-        "04": { text: '待定', status: 'Error' },
+        '01': { text: '刷脸支付', status: 'Processing' },
+        '02': { text: '扫码支付', status: 'Processing' },
+        '03': { text: '刷卡支付', status: 'Processing' },
+        '04': { text: '待定', status: 'Error' },
       },
     },
-    // {
-    //   title: '状态',01刷脸支付，02扫码支付，03刷卡支付，04待定
-    //   dataIndex: 'status',
-    //   align: 'center',
-    //   initialValue: '',
-    //   valueEnum: {
-    //     1: { text: '正常', status: 'Processing' },
-    //     2: { text: '冻结', status: 'Error' },
-    //   },
-    // },
     {
       title: '交易流水号',
       dataIndex: 'tradeNo',
@@ -79,19 +100,22 @@ const TableList: React.FC<TableListProps> = () => {
       dataIndex: 'serviceCharge',
       hideInSearch: true,
     },
-   
+
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => (
         <>
-          
           <a
-            // onClick={() => {
-            //   router.push(`merchantsBillsDetails/list/components?id=${record.merchantId}`);
-            // }}
-            
+            onClick={async () => {
+              handleEntity(record);
+              handleModalVisible(true)
+            }
+            }
+          // onClick={() => {
+          //   router.push(`merchantsBillsDetails/list/components?id=${record.merchantId}`);
+          // }}
           >
             退款
           </a>
@@ -99,19 +123,21 @@ const TableList: React.FC<TableListProps> = () => {
       ),
     },
   ];
-
+ 
   return (
     <PageHeaderWrapper>
-      <ProTable<TableListItem>
+      <ProTable
         headerTitle="商户对账列表"
+        size="middle"
+        actionRef={actionRef}
+        rowKey="userId"
         // onInit={setActionRef}
-        rowKey="merchantId"
         pagination={{
           showSizeChanger: true,
         }}
         // rowSelection="true"
         request={async (params = {}) => {
-          const pagination = { current: params.current, size: params.pageSize };
+          const pagination = { current: params.current, size: params.pageSize ,orders: [{ column: 'id', asc: false }],};
 
           delete params.current;
           delete params.pageSize;
@@ -127,6 +153,41 @@ const TableList: React.FC<TableListProps> = () => {
         }}
         columns={columns}
       />
+      <OrderForm
+        onSubmit={async value => {
+          let success = false;
+          handleEntity(value);
+          if (value.orderNo) {
+            success = await refundOrder(value);
+          }
+          if (success) {
+            handleModalVisible(false);
+            actionRef.current!.reload();
+          }
+        }}
+        entity={entity}
+        onCancel={() => handleModalVisible(false)}
+        modalVisible={createModalVisible}
+      />
+       <ResultForm
+        onSubmit={async value => {
+          let success = false;
+          handleEntity(value);
+          // if (value.orderNo) {
+          //   success = await resultOrder(value);
+          // }
+          if (success) {
+            handleModalVisible(false);
+            actionRef.current!.reload();
+          }
+        }}
+        entity={entity}
+        resultOrder={resultOrder}
+        onCancel={() => handleModalVisible2(false)}
+        modalVisible={createModalVisible2}
+      />
+
+
     </PageHeaderWrapper>
   );
 };

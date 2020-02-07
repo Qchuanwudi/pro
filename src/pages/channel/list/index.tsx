@@ -1,126 +1,81 @@
-import { Button, Divider, Dropdown, Form, Icon, Menu, message, Modal, Result } from 'antd';
+import { Button, Divider, Dropdown, Form, Icon, Menu, message } from 'antd';
 import React, { useState } from 'react';
-
-import Link from 'umi/link';
 import router from 'umi/router';
-
 import { FormComponentProps } from 'antd/es/form';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, UseFetchDataAction } from '@ant-design/pro-table';
-import CreateForm from './components/CreateForm';
-
-import UpdateForm, { FormValueType } from './components/UpdateForm';
-import { TableListItem, TableListParams } from './data.d';
+// import CreateForm from './components/CreateForm';
+// import UpdateForm, { FormValueType } from './components/UpdateForm';
+import { TableListItem } from './data.d';
 import {
   queryChannel,
   removeChannel,
-  save,
   updateChannel,
   updateAppChannelPassword,
 } from './service';
 
-interface TableListProps extends FormComponentProps {}
+interface TableListProps extends FormComponentProps { }
 
-/**
- * 添加节点
- * @param fields
- */
-const handleAdd = async (fields: FormValueType) => {
-  debugger;
-  const hide = message.loading('正在添加');
-  try {
-    await addChannel({
-      // channelName: fields.channelName,
-      // channelTypeName: fields.channelTypeName,
-      // contact: fields.contact,
-      // phone: fields.phone,
-      // loginId: fields.loginId,
-      // merchantNumber: fields.merchantNumber,
-      status: fields.status,
-    });
-    debugger;
-    hide();
-    message.success('添加成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('添加失败请重试！');
-    return false;
-  }
-};
-
-/**
- * 更新节点
- * @param fields
- */
-const handleUpdate = async (fields: FormValueType) => {
-  const hide = message.loading('正在配置');
-  try {
-    await save({
-      // name: fields.name,
-      // desc: fields.desc,
-      // key: fields.key,
-      // userId: string;//userID
-      channelAttribute: fields.channelAttribute, //代理类型(1=个人，2=公司)
-      channelId: fields.channelId, //所属代理
-      channelName: fields.channelName, //企业名称
-      channelType: fields.channelType, //代理类型
-      referrer: fields.referrer, //推荐人
-      status: fields.status,
-      legalIdNumber: fields.legalIdNumber, //证件号码
-      contact: fields.contact, //联系人
-      phone: fields.phone, //联系电话
-      address: fields.address, //联系地址
-      aliCommissionAccount: fields.aliCommissionAccount, //支付号佣账号
-      wxCommissionAccount: fields.wxCommissionAccount, //微信佣账号
-      bankCommissionAccount: fields.bankCommissionAccount, //银行佣账号
-      thirdCommissionAccount: fields.thirdCommissionAccount, //第三方佣账号
-      commissionRatio: fields.commissionRatio, //返佣比例
-      commissionType: fields.commissionType, //返佣类型
-      loginId: fields.loginId, //账号
-      loginPwd: fields.loginPwd, //密码
-    });
-    hide();
-
-    message.success('配置成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('配置失败请重试！');
-    return false;
-  }
-};
 
 /**
  *  删除节点
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: TableListItem[]) => {
+const handleRemove = async selectedRows => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
-  try {
-    await removeChannel({
-      key: selectedRows.map(row => row.key),
-    });
-    hide();
-    message.success('删除成功，即将刷新');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('删除失败，请重试');
-    return false;
+  const data = [];
+  // 遍历数组
+  for (let i = 0; i < selectedRows.length; i += 1) {
+    data.push({ channelId: selectedRows[i].channelId });
   }
+  const response = await removeChannel(data);
+  if (response.code === 0) {
+    const params = response.result;
+    let success = true;
+    let msg = '';
+    // 校验data与响应结果一致
+    for (let j = 0; j < data.length; j += 1) {
+      const id = data[j].channelId;
+      if (params[id] !== true) {
+        success = false;
+        msg = params[id].message!;
+        break;
+      }
+    }
+
+    if (success) {
+      hide();
+      message.success('删除成功，即将刷新');
+      return true;
+    }
+    hide();
+    message.error(msg);
+    return true;
+  }
+  hide();
+  message.error(response.message);
+  return false;
 };
 
+
+
 //账号禁用
-const editAndDelete = async (channelId: string, status: string) => {
+const editAndDelete = async (channelId: string, status: number) => {
+  debugger;
+  if (status === 1) {
+    status = 2;
+  } else {
+    status = 1;
+  }
   const result = await updateChannel(channelId, status);
-  if (result.result === true) {
+  // console.log(result.result.status);
+  if (result.code === 0) {
     alert('成功');
     //刷新页面
     location.replace(document.referrer);
   } else {
-    alert('失败');
+    alert(result.message);
   }
 };
 
@@ -138,18 +93,19 @@ const updateChannelPassword = async (channelId: string) => {
 };
 // 事件
 const TableList: React.FC<TableListProps> = () => {
-  const [createModalVisible, handleModalVisible] = useState<boolean>(false);
-  const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
-  const [stepFormValues, setStepFormValues] = useState({});
+  // const [entity, handleEntity] = useState<any>();
+  // const [createModalVisible, handleModalVisible] = useState<boolean>(false);
+  // const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
+  // const [stepFormValues, setStepFormValues] = useState({});
 
   const [actionRef, setActionRef] = useState<UseFetchDataAction<{ data: TableListItem[] }>>();
-  const columns: ProColumns<TableListItem>[] = [
+  const columns: ProColumns<any>[] = [
     {
-      title: '代理商名称',
+      title: '代理名称',
       dataIndex: 'channelName',
     },
     {
-      title: '代理商类别',
+      title: '代理类别',
       dataIndex: 'channelTypeName',
       hideInSearch: true,
     },
@@ -163,12 +119,14 @@ const TableList: React.FC<TableListProps> = () => {
     },
     {
       title: '账号',
-      dataIndex: 'loginId',
+      // dataIndex: 'loginId',
+      dataIndex: 'accountInfo.username',
+
       hideInSearch: true,
     },
     {
       title: '开通商户数',
-      dataIndex: 'merchantNumber',
+      dataIndex: 'merchantCount',
       hideInSearch: true,
     },
 
@@ -179,8 +137,8 @@ const TableList: React.FC<TableListProps> = () => {
       align: 'center',
       initialValue: '',
       valueEnum: {
-        1: { text: '正常', status: 'Processing' },
-        2: { text: '冻结', status: 'Error' },
+        1: { text: '启用', status: 'Processing' },
+        2: { text: '禁用', status: 'Error' },
       },
     },
     {
@@ -193,21 +151,49 @@ const TableList: React.FC<TableListProps> = () => {
             //账号禁用
             onClick={() => editAndDelete(record.channelId, record.status)}
           >
-            禁用
+            {record.status === 1 ? '禁用' : '启用'}
           </a>
-          &nbsp;&nbsp;&nbsp;&nbsp;
-          <a onClick={() => updateChannelPassword(record.channelId)}>更改密码</a>
+          <Divider type="vertical" />
+          {/* <a onClick={() => updateChannelPassword(record.channelId)}>更改密码</a> */}
           <Divider type="vertical" />
           <a
             // key="detail"
             onClick={() => {
-              router.push(`channel/list/detailpage?id=${record.channelId}`);
-              // onClick={async () => {
-              //   router.push('/channel/list/components/basic?channelId=' + record.channelId);
+              router.push(`/channel/list/detailpage?channelId=${record.channelId}`);
             }}
           >
             查看详情
           </a>
+          <Divider type="vertical" />
+          <Dropdown
+            overlay={
+              <Menu
+                onClick={async e => {
+                  const records = [record];
+                  // 删除
+                  if (e.key === 'remove') {
+                    // 提示删除
+                    await handleRemove(records);
+                    // action.reload();
+                    location.reload();
+                    // actionRef.current!.reload();
+                  }
+                }}
+                selectedKeys={[]}
+              >
+
+                <Menu.Item key="remove">
+                  <Icon type="delete" />
+                  删除
+                </Menu.Item>
+
+              </Menu>
+            }
+          >
+            <a>
+              更多 <Icon type="down" />
+            </a>
+          </Dropdown>
         </>
       ),
     },
@@ -216,62 +202,24 @@ const TableList: React.FC<TableListProps> = () => {
   return (
     <PageHeaderWrapper>
       <ProTable<TableListItem>
-        headerTitle="查询代理商"
-        onInit={setActionRef}
+        headerTitle="代理商列表"
+        size="middle"
+        actionRef={actionRef}
+        // onInit={setActionRef}
         rowKey="channelId"
         pagination={{
           showSizeChanger: true,
         }}
         rowSelection="true"
         toolBarRender={(action, { selectedRows }) => [
-          <a href={'/channel/list/step-form'}>
-            <Button icon="plus" type="primary">
-              新建
-            </Button>
-            ,
-          </a>,
-
-          selectedRows && selectedRows.length > 0 && (
-            <Dropdown
-              overlay={
-                <Menu
-                  onClick={async e => {
-                    if (e.key === 'remove') {
-                      await handleRemove(selectedRows);
-                      action.reload();
-                    }
-                  }}
-                  selectedKeys={[]}
-                >
-                  <Menu.Item key="remove">批量删除</Menu.Item>
-                </Menu>
-              }
-            >
-              columns
-              <Button>
-                批量操作 <Icon type="down" />
-              </Button>
-            </Dropdown>
-          ),
-        ]}
-        toolBarRender={(action, { selectedRows }) => [
           <a
             onClick={() => {
-              handleUpdateModalVisible(true);
-              setStepFormValues(action);
+              router.push(`/channel/list/step-form`);
             }}
-            // href={'/channel/list/step-form'}
           >
             <Button icon="plus" type="primary">
-              新建new
-            </Button>
-            ,
-          </a>,
-          <a href={'/channel/list/step-form'}>
-            <Button icon="plus" type="primary">
               新建
-            </Button>
-            ,
+            </Button>,
           </a>,
           selectedRows && selectedRows.length > 0 && (
             <Dropdown
@@ -285,11 +233,13 @@ const TableList: React.FC<TableListProps> = () => {
                   }}
                   selectedKeys={[]}
                 >
-                  <Menu.Item key="remove">批量删除</Menu.Item>
+                  <Menu.Item key="remove">
+                    <Icon type="delete" />
+                    删除
+                  </Menu.Item>
                 </Menu>
               }
             >
-              columns
               <Button>
                 批量操作 <Icon type="down" />
               </Button>
@@ -302,7 +252,7 @@ const TableList: React.FC<TableListProps> = () => {
           </div>
         )}
         request={async (params = {}) => {
-          const pagination = { current: params.current, size: params.pageSize };
+          const pagination = { current: params.current, size: params.pageSize, orders: [{ column: 'id', asc: false }], };
 
           delete params.current;
           delete params.pageSize;
@@ -318,7 +268,7 @@ const TableList: React.FC<TableListProps> = () => {
         }}
         columns={columns}
       />
-      <CreateForm
+      {/* <CreateForm
         onSubmit={async value => {
           const success = await handleAdd(value);
           if (success) {
@@ -329,9 +279,9 @@ const TableList: React.FC<TableListProps> = () => {
         }}
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
-      />
+      /> */}
 
-      {stepFormValues && Object.keys(stepFormValues).length ? (
+      {/* {stepFormValues && Object.keys(stepFormValues).length ? (
         <UpdateForm
           onSubmit={async value => {
             const success = await handleUpdate(value);
@@ -348,7 +298,7 @@ const TableList: React.FC<TableListProps> = () => {
           updateModalVisible={updateModalVisible}
           values={stepFormValues}
         />
-      ) : null}
+      ) : null} */}
       {/* <ChannelForm
         onSubmit= {
           const success = true;
