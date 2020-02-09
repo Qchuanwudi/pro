@@ -81,11 +81,11 @@ class Step2 extends Component<Step2Props> {
     }
     const { validateFields, getFieldsValue } = form;
     const onPrev = () => {
-     
+      change_hangye;
       if (dispatch) {
         const values = getFieldsValue();
         console.log(values);
-      
+        debugger;
         dispatch({
           type: 'formAndstepForm/saveStepFormData',
           payload: {
@@ -121,10 +121,10 @@ class Step2 extends Component<Step2Props> {
         <UploaderComponent title={'法人身份证正面'} onChange={this.change_farenzhengmian} />
         <UploaderComponent title={'法人身份证反面'} onChange={this.change_farenfanmian} />
         <UploaderComponent title={'门头照片'} onChange={this.change_mentouzhaopian} />
-        <UploaderComponent title={'店铺内景1'} onChange={this.change_dianpu1} />
-        <UploaderComponent title={'店铺内景2'} onChange={this.change_dianpu2} />
-        <UploaderComponent title={'店铺内景3'} onChange={this.change_dianpu3} />
-        <UploaderComponent title={'行业许可证'} onChange={this.change_hangye} />
+        <UploaderComponent title={'店铺内景1'}  />
+        <UploaderComponent title={'店铺内景2'}  />
+        <UploaderComponent title={'店铺内景3'}  />
+        <UploaderComponent title={'行业许可证'}  />
         <div style={{ marginTop: 30, marginBottom: 30 }}>
           营业执照：选择示例图片查看大图提示：请保持图片内容清晰，格式支持jpg、jepg、png、bmp格式，文件大写不超过5M
         </div>

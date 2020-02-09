@@ -19,3 +19,12 @@ export async function updataimg(params: any) {
     data: params,
   });
 }
+
+
+
+export async function cityCode(params: any) {
+  return request('/server/api/dict/app-dict-city-code/list', {
+    method: 'POST',
+    data: params,
+  });
+}

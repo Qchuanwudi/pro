@@ -73,13 +73,13 @@ const Model: ModelType = {
     updated: '',
 
     step: {
-      payAccount: '',
-      receiverAccount: '',
-      receiverName: '',
-      amount: '',
-      example_pic: '',
+      // payAccount: '',
+      // receiverAccount: '',
+      // receiverName: '',
+      // amount: '',
+      // example_pic: '',
     },
-    example_pic: '',
+    // example_pic: '',
   },
 
   effects: {

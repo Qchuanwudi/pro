@@ -61,7 +61,7 @@ class Login extends Component<LoginProps, LoginState> {
     //   payload: { businessLicenseAuthPic: value },
     // })
     const response = await verificationcode(this.state.inputCode)
-    debugger
+   
     console.log(response)
     this.setState({
       code: response.result.code,
@@ -73,10 +73,8 @@ class Login extends Component<LoginProps, LoginState> {
   }
 
   handleSubmit = (err: unknown, values: LoginParamsType) => {
-if (this.state.inputCode) {
-                     verificationcode(this.state.inputCode,this.state.key)
-}
-  debugger
+
+  
     const { type } = this.state;
     if (!err) {
       const { dispatch } = this.props;
@@ -84,6 +82,8 @@ if (this.state.inputCode) {
         type: 'login/login',
         payload: {
           ...values,
+          captcha: this.state.inputCode,
+          checkKey:this.state.key,
           type,
         },
       });

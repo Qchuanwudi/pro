@@ -1,4 +1,4 @@
-import { Form, Icon, Input, Card, message, Button } from 'antd';
+import { Form, Icon, Input, Card, message, Button, Row, Col } from 'antd';
 import React, { Component } from 'react';
 import { Dispatch } from 'redux';
 import { FormComponentProps } from 'antd/es/form';
@@ -64,7 +64,7 @@ class Step3 extends Component<Step3Props> {
 
     const onPrev = (e: React.FormEvent) => {
       validateFields((err: any, values: StateType['step']) => {
-        if (dispatch) {
+        if (!err && dispatch && values) {
           const values = getFieldsValue();
           dispatch({
             type: 'formAndstepForm/submitStepForm',
@@ -79,7 +79,7 @@ class Step3 extends Component<Step3Props> {
                 userId: '',
                 username: this.state.value1,
               },
-              address: '',
+              // address: '',
               appMerchantPaywayList: [
                 {
                   createBy: '',
@@ -95,7 +95,7 @@ class Step3 extends Component<Step3Props> {
                 },
               ],
               appMerchantSignedList: [],
-              legalName: '1',
+              // legalName: '1',
               merchantCode: '1',
               merchantId: '1',
             },
@@ -115,10 +115,11 @@ class Step3 extends Component<Step3Props> {
       }
     };
     return (
-      <div style={{ margin: 0, position: 'relative' }}>
-        <Card style={{ marginTop: 10, margin: 0,height:200 }}>
-          <Form style={{ width: 300, textAlign: 'center', marginLeft: 570 }}>
-            <FormItem>
+     
+       
+          <Form labelCol={{ span: 9 }} wrapperCol={{ span: 12 }}>
+            <Form.Item label="用户初始账号">
+              
               {getFieldDecorator('username', {
                 rules: [
                   {
@@ -136,11 +137,12 @@ class Step3 extends Component<Step3Props> {
                   prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                   placeholder="请输入初始账号"
                   onChange={event => this.handleMaxBackUp(event)}
+                  style={{width:350}}
                 />,
               )}
-            </FormItem>
+            </Form.Item>
 
-            <Form.Item>
+            <Form.Item label="用户初始密码">
               {getFieldDecorator('请输入初始密码', {
                 rules: [{ required: true, message: 'Please input your Password!' }],
               })(
@@ -149,26 +151,33 @@ class Step3 extends Component<Step3Props> {
                   type="password"
                   placeholder="请输入密码"
                   onChange={event => this.handleMaxRestoreUp(event)}
+                  style={{width:350}}
                 />,
               )}
-            </Form.Item>
-          </Form>
-          <Button
+        </Form.Item>
+        
+        <Row>
+          <Col span={14} style={{ textAlign: 'right' }}>
+            <Button
           type="primary"
           onClick={onPrev}
-          style={{ position: 'absolute', top: 150, left: 600 ,width:97}}
+          style={{width:97}}
         >
           添加
         </Button>
+        
+        
         <Button
           type="primary"
-          onClick={onPrev3}
-          style={{ position: 'absolute', top: 150, left: 800 }}
+          onClick={onPrev3} 
+          style={{marginLeft:100}}
         >
           取消添加
         </Button>
-        </Card>
-      </div>
+        </Col>
+        </Row>
+          </Form>
+          
     );
   }
 }

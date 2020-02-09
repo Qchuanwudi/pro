@@ -22,6 +22,7 @@ class Step4 extends Component<Step4Props> {
           type: 'formAndstepForm/saveCurrentStep',
           payload: 'info',
         });
+        
       }
     };
 
