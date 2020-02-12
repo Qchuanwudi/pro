@@ -1,6 +1,6 @@
-import { Button, Divider, Form, Input, Select, Spin,Cascader} from 'antd';
+import { Button, Divider, Form, Input, Select, Spin, Cascader, DatePicker } from 'antd';
 import React, { Component, Fragment } from 'react';
-
+import { formatMessage } from 'umi-plugin-react/locale';
 import { Dispatch } from 'redux';
 import { FormComponentProps } from 'antd/es/form';
 import { connect } from 'dva';
@@ -12,47 +12,46 @@ import { withRouter } from 'react-router-dom';
 import { async } from 'q';
 import { cityCode } from '../../service';
 
+const { TextArea } = Input;
+const { RangePicker } = DatePicker;
 let province = [
-  { value: 110000000000, label: "北京市", isLeaf: false },
-  { value: 120000000000, label: "天津市", isLeaf: false },
-  { value: 130000000000, label: "河北省", isLeaf: false },
-  { value: 140000000000, label: "山西省", isLeaf: false },
-  { value: 150000000000, label: "内蒙古自治区", isLeaf: false },
-  { value: 210000000000, label: "辽宁省", isLeaf: false },
-  { value: 220000000000, label: "吉林省", isLeaf: false },
-  { value: 230000000000, label: "黑龙江省", isLeaf: false },
-  { value: 310000000000, label: "上海市", isLeaf: false },
-  { value: 320000000000, label: "江苏省", isLeaf: false },
-  { value: 330000000000, label: "浙江省", isLeaf: false },
-  { value: 340000000000, label: "安徽省", isLeaf: false },
-  { value: 350000000000, label: "福建省", isLeaf: false },
-  { value: 360000000000, label: "江西省", isLeaf: false },
-  { value: 370000000000, label: "山东省", isLeaf: false },
-  { value: 410000000000, label: "河南省", isLeaf: false },
-  { value: 420000000000, label: "湖北省", isLeaf: false },
-  { value: 430000000000, label: "湖南省", isLeaf: false },
-  { value: 440000000000, label: "广东省", isLeaf: false },
-  { value: 450000000000, label: "广西壮族自治区", isLeaf: false },
-  { value: 460000000000, label: "海南省", isLeaf: false },
-  { value: 500000000000, label: "重庆市", isLeaf: false },
-  { value: 510000000000, label: "四川省", isLeaf: false },
-  { value: 520000000000, label: "贵州省", isLeaf: false },
-  { value: 530000000000, label: "云南省", isLeaf: false },
-  { value: 540000000000, label: "西藏自治区", isLeaf: false },
-  { value: 610000000000, label: "陕西省", isLeaf: false },
-  { value: 620000000000, label: "甘肃省", isLeaf: false },
-  { value: 630000000000, label: "青海省", isLeaf: false },
-  { value: 640000000000, label: "宁夏回族自治区", isLeaf: false },
-  { value: 650000000000, label: "新疆维吾尔自治区", isLeaf: false },
-  { value: 7013135772653, label: "香港特别行政区", isLeaf: false },
-  { value: 7112407077174, label: "澳门特别行政区", isLeaf: false },
-  { value: 7212684281636, label: "台湾省", isLeaf: false }
+  { value: 110000000000, label: '北京市', isLeaf: false },
+  { value: 120000000000, label: '天津市', isLeaf: false },
+  { value: 130000000000, label: '河北省', isLeaf: false },
+  { value: 140000000000, label: '山西省', isLeaf: false },
+  { value: 150000000000, label: '内蒙古自治区', isLeaf: false },
+  { value: 210000000000, label: '辽宁省', isLeaf: false },
+  { value: 220000000000, label: '吉林省', isLeaf: false },
+  { value: 230000000000, label: '黑龙江省', isLeaf: false },
+  { value: 310000000000, label: '上海市', isLeaf: false },
+  { value: 320000000000, label: '江苏省', isLeaf: false },
+  { value: 330000000000, label: '浙江省', isLeaf: false },
+  { value: 340000000000, label: '安徽省', isLeaf: false },
+  { value: 350000000000, label: '福建省', isLeaf: false },
+  { value: 360000000000, label: '江西省', isLeaf: false },
+  { value: 370000000000, label: '山东省', isLeaf: false },
+  { value: 410000000000, label: '河南省', isLeaf: false },
+  { value: 420000000000, label: '湖北省', isLeaf: false },
+  { value: 430000000000, label: '湖南省', isLeaf: false },
+  { value: 440000000000, label: '广东省', isLeaf: false },
+  { value: 450000000000, label: '广西壮族自治区', isLeaf: false },
+  { value: 460000000000, label: '海南省', isLeaf: false },
+  { value: 500000000000, label: '重庆市', isLeaf: false },
+  { value: 510000000000, label: '四川省', isLeaf: false },
+  { value: 520000000000, label: '贵州省', isLeaf: false },
+  { value: 530000000000, label: '云南省', isLeaf: false },
+  { value: 540000000000, label: '西藏自治区', isLeaf: false },
+  { value: 610000000000, label: '陕西省', isLeaf: false },
+  { value: 620000000000, label: '甘肃省', isLeaf: false },
+  { value: 630000000000, label: '青海省', isLeaf: false },
+  { value: 640000000000, label: '宁夏回族自治区', isLeaf: false },
+  { value: 650000000000, label: '新疆维吾尔自治区', isLeaf: false },
+  { value: 7013135772653, label: '香港特别行政区', isLeaf: false },
+  { value: 7112407077174, label: '澳门特别行政区', isLeaf: false },
+  { value: 7212684281636, label: '台湾省', isLeaf: false },
 ];
 
-let options = province
-
-
-
+let options = province;
 
 const { Option } = Select;
 const formItemLayout = {
@@ -79,10 +78,10 @@ class Step1 extends Component<Step1Props> {
     inputValue: '',
     inputValue2: '',
     inputValue3: '',
-    inputValue4:'',
+    inputValue4: '',
     areaCode: '',
+    empty: '',
   };
-
 
   _onChange = (value, selectedOptions) => {
     console.log(value);
@@ -91,15 +90,14 @@ class Step1 extends Component<Step1Props> {
       // address: selectedOptions,
     });
     this.setState({
-      inputValue: selectedOptions.map(o => o.label).join(', ')
+      inputValue: selectedOptions.map(o => o.label).join(', '),
     });
     const onChange = this.props.onChange;
 
     if (onChange) {
       onChange({ ...value });
     }
-  }
-
+  };
 
   _onChange2 = (value, selectedOptions) => {
     console.log(value);
@@ -108,14 +106,14 @@ class Step1 extends Component<Step1Props> {
       // address: selectedOptions,
     });
     this.setState({
-      inputValue2: selectedOptions.map(o => o.label).join(', ')
+      inputValue2: selectedOptions.map(o => o.label).join(', '),
     });
     const onChange = this.props.onChange;
 
     if (onChange) {
       onChange({ ...value });
     }
-  }
+  };
   _onChange3 = (value, selectedOptions) => {
     console.log(value);
     this.setState({
@@ -123,14 +121,14 @@ class Step1 extends Component<Step1Props> {
       // address: selectedOptions,
     });
     this.setState({
-      inputValue3: selectedOptions.map(o => o.label).join(', ')
+      inputValue3: selectedOptions.map(o => o.label).join(', '),
     });
     const onChange = this.props.onChange;
 
     if (onChange) {
       onChange({ ...value });
     }
-  }
+  };
   _onChange4 = (value, selectedOptions) => {
     console.log(value);
     this.setState({
@@ -138,23 +136,23 @@ class Step1 extends Component<Step1Props> {
       // address: selectedOptions,
     });
     this.setState({
-      inputValue4: selectedOptions.map(o => o.label).join(', ')
+      inputValue4: selectedOptions.map(o => o.label).join(', '),
     });
     const onChange = this.props.onChange;
 
     if (onChange) {
       onChange({ ...value });
     }
-  }
+  };
 
-  _loadData = (selectedOptions) => {
+  _loadData = selectedOptions => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
     const id = targetOption.value;
     targetOption.loading = true;
     // debugger;
     if (selectedOptions.length == '1') {
       // 点击省,获取市
-      const data1 = { condition: { "parentCode": id }, size: 100, total: 100, }
+      const data1 = { condition: { parentCode: id }, size: 100, total: 100 };
       cityCode(data1).then(data => {
         // debugger;
         if (data.code == 0) {
@@ -175,7 +173,7 @@ class Step1 extends Component<Step1Props> {
       });
     } else if (selectedOptions.length == '2') {
       // 点击市,获取区
-      const data1 = { condition: { "parentCode": id }, size: 100, total: 100, }
+      const data1 = { condition: { parentCode: id }, size: 100, total: 100 };
 
       cityCode(data1).then(data => {
         if (data.code == 0) {
@@ -198,81 +196,31 @@ class Step1 extends Component<Step1Props> {
     } else {
       targetOption.loading = false;
     }
-  }
+  };
 
   _resetLocation = () => {
     document.getElementsByClassName('ant-cascader-picker-clear')[0].click();
     this.setState({
       inputValue: '',
     });
-  }
-
-
-  // componentDidMount() {
-  //   const { dispatch, queryagency } = this.props;
-
-  //   if (queryagency) {
-  //     console.log(queryagency);
-  //     this.setState({
-  //       data2: queryagency.result.records,
-  //       success:true,
-  //     });
-  //     debugger
-  //   }
-  //   if (dispatch) {
-  //     dispatch({
-  //       type: 'formAndstepForm/QueryAgency',
-  //       payload: {
-
-  //         json: {
-
-  //           size: 10,
-  //           total: 60,
-  //         },
-  //       },
-  //     });
-
-  //   }
-
-  //};
-
-  // componentDidMount() {
-  //   const { dispatch, queryagency } = this.props;
-
-  //   if (queryagency) {
-  //     console.log(queryagency);
-  //     this.setState({
-  //       data2: queryagency.result.records,
-  //     });
-  //   }
-  //   if (dispatch) {
-  //     dispatch({
-  //       type: 'formAndstepForm/QueryAgency',
-  //       payload: {
-
-  //         json: {
-
-  //           size: 10,
-  //           total: 60,
-  //         },
-  //       },
-  //     });
-
-  //   }
-
-  // };
+  };
 
   render() {
-    const { form, dispatch, data } = this.props;
-
-    console.log(dispatch);
+    const { form, dispatch, data, data1 } = this.props;
+    console.log(data1);
+    if (data1 === 'result') {
+      this.setState({
+        empty: ' ',
+      });
+    }
+    console.log(form);
     if (!data) {
       return null;
     }
     const { getFieldDecorator, validateFields } = form;
-    console.log('save data')
-    console.log(form)
-    console.log('save data')
+    console.log('save data');
+    console.log(form);
+    console.log('save data');
 
     const onValidateForm = () => {
       validateFields((err: any, values: StateType['step']) => {
@@ -303,61 +251,86 @@ class Step1 extends Component<Step1Props> {
     return (
       <Fragment>
         <Form layout="horizontal" className={styles.stepForm} hideRequiredMark>
-          <Form.Item {...formItemLayout} label="企业名称">
+          <Form.Item {...formItemLayout} label="商户名称">
             {getFieldDecorator('merchantName', {
-              initialValue: data.merchantName,
+              initialValue: '',
               rules: [{ required: true, message: '请输入企业名称' }],
             })(<Input placeholder="请输入企业名称" />)}
           </Form.Item>
 
-          <Form.Item {...formItemLayout} label="企业简称">
+          <Form.Item {...formItemLayout} label="商户简称">
             {getFieldDecorator('storeAbbreviation', {
-              initialValue: data.storeAbbreviation,
+              initialValue: '',
+              rules: [{ required: true, message: '请输入商户简称' }],
             })(<Input placeholder="请输入企业简称" />)}
           </Form.Item>
 
-          <Form.Item
-            onClick={agency}
-            {...formItemLayout}
-            label="所属代理"
-            className={styles.stepForm}
-            hideRequiredMark
-            style={{ marginBottom: 25, marginTop: 20 }}
-          >
-            {getFieldDecorator('channelId', {
-              rules: [{ required: true, message: '请选择代理商' }],
-            })(
-              
-              <Select placeholder="请选择代理商">
-                {this.state.data2.map((item, index) => (
-                  <Option key={index} value={item.channelId}>
-                    {item.channelName}
-                  </Option>
-                ))}
-              </Select>,
-             
-            )}
+          {/* **** */}
+          <Form.Item {...formItemLayout} label="商户类型">
+            {getFieldDecorator('merchantName', {
+              initialValue: '',
+              rules: [{ required: true, message: '请输入企业名称' }],
+            })(<Input placeholder="请输入企业名称" />)}
           </Form.Item>
-
-          <Form.Item {...formItemLayout} label="行业分类">
+          {/* **** */}
+          <Form.Item {...formItemLayout} label="商户行业">
             {getFieldDecorator('industryCode', {
-              initialValue: data.industryCode,
+              initialValue: '',
               rules: [
                 {
-                  required: false,
+                  required: true,
                   message: '请填写正确行业，如：销售行业,餐饮行业...',
                   pattern: new RegExp(/^[\u4e00-\u9fa5]+$/, 'g'),
                 },
               ],
             })(<Input />)}
           </Form.Item>
+          {/* ***** */}
+          <Form.Item {...formItemLayout} label="社会信用代码">
+            {getFieldDecorator('merchantName', {
+              initialValue: '',
+              rules: [{ required: true, message: '请输入企业名称' }],
+            })(<Input placeholder="请输入企业名称" />)}
+          </Form.Item>
+          {/* ***** */}
 
           <Form.Item {...formItemLayout} label="营业执照号">
             {getFieldDecorator('businessLicenseNo', {
-              initialValue: data.businessLicenseNo,
+              initialValue: '',
               rules: [{ required: true, message: '请输入营业执照号' }],
             })(<Input placeholder="请输入营业执照号" />)}
           </Form.Item>
+
+          <Form.Item {...formItemLayout} label="营业执照有效期">
+            {getFieldDecorator('date', {
+              rules: [
+                {
+                  required: true,
+                  message: '请选择有效日期',
+                },
+              ],
+            })(
+              <RangePicker
+                style={{ width: '100%' }}
+                placeholder={[formatMessage({ id: '起止日期' }), formatMessage({ id: '结束日期' })]}
+              />,
+            )}
+          </Form.Item>
+
+          {/* ****** */}
+          <Form.Item {...formItemLayout} label="经营范围">
+            {getFieldDecorator('registeredAddress', {
+              initialValue: this.state.inputValue,
+              rules: [
+                {
+                  required: true,
+                  message: '请输入经营范围',
+                },
+              ],
+            })(<TextArea rows={4} />)}
+          </Form.Item>
+          {/* ****** */}
+
           <Form.Item {...formItemLayout} label="注册地址">
             <Cascader
               options={this.state.options}
@@ -368,12 +341,12 @@ class Step1 extends Component<Step1Props> {
             />
             {getFieldDecorator('registeredAddress', {
               initialValue: this.state.inputValue,
-              
-            })(<Input placeholder="请输入注册地址" type="hidden"/>)}
+              rules: [{ required: true, message: '请输入注册地址' }],
+            })(<Input placeholder="请输入注册地址" type="hidden" />)}
           </Form.Item>
 
           <Form.Item {...formItemLayout} label="店铺地址">
-          <Cascader
+            <Cascader
               options={this.state.options}
               loadData={this._loadData}
               onChange={this._onChange2}
@@ -383,26 +356,26 @@ class Step1 extends Component<Step1Props> {
             {getFieldDecorator('storeAddress', {
               initialValue: this.state.inputValue2,
               rules: [{ required: true, message: '请输入店铺地址' }],
-            })(<Input placeholder="请输入店铺地址" type="hidden"/>)}
+            })(<Input placeholder="请输入店铺地址" type="hidden" />)}
           </Form.Item>
 
-          <Form.Item {...formItemLayout} label="支付宝签约账号">
+          {/* <Form.Item {...formItemLayout} label="支付宝签约账号">
             {getFieldDecorator('aliCommissionAccount', {
-              initialValue: data.aliCommissionAccount,
+              initialValue: "",
               rules: [{ required: true, message: '请输入支付宝签约账号' }],
             })(<Input placeholder="请输入支付宝签约账号" />)}
           </Form.Item>
 
           <Form.Item {...formItemLayout} label="微信签约账号">
             {getFieldDecorator('wxCommissionAccount', {
-              initialValue: data.wxCommissionAccount,
+              initialValue: "",
               rules: [{ required: true, message: '请输入微信签约账号' }],
             })(<Input placeholder="请输入微信签约账号" />)}
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item style={{ marginBottom: 10 }} {...formItemLayout} label="法人姓名">
             {getFieldDecorator('legalName', {
-              initialValue: data.legalName,
+              initialValue: '',
               rules: [
                 {
                   required: true,
@@ -410,10 +383,26 @@ class Step1 extends Component<Step1Props> {
                   pattern: new RegExp(/^[\u4e00-\u9fa5]+$/, 'g'),
                 },
               ],
-            })(<Input placeholder="请输入微信签约账号" />)}
+            })(<Input placeholder="请输入法人姓名" />)}
           </Form.Item>
 
-          <Form.Item
+          <Form.Item {...formItemLayout} label="法人手机号">
+            {getFieldDecorator('phone', {
+              initialValue: '',
+              rules: [
+                {
+                  required: true,
+                  message: '请输入完整手机号码',
+                  pattern: new RegExp(/^1(3|4|5|6|7|8|9)\d{9}$/, 'g'),
+                },
+              ],
+              getValueFromEvent: event => {
+                return event.target.value.replace(/\D/g, '');
+              },
+            })(<Input placeholder="请输入手机号码" />)}
+          </Form.Item>
+
+          {/* <Form.Item
             style={{ marginBottom: 28, marginTop: 20 }}
             {...formItemLayout}
             label="证件类型"
@@ -429,11 +418,11 @@ class Step1 extends Component<Step1Props> {
                 <Option value="3">港澳台</Option>
               </Select>,
             )}
-          </Form.Item>
+          </Form.Item> */}
 
-          <Form.Item {...formItemLayout} label="证件号码">
+          <Form.Item {...formItemLayout} label="法人身份证号码">
             {getFieldDecorator('legalIdNumber', {
-              initialValue: data.legalIdNumber,
+              initialValue: '',
               rules: [
                 {
                   required: true,
@@ -447,17 +436,17 @@ class Step1 extends Component<Step1Props> {
             })(<Input placeholder="请输入证件号码" />)}
           </Form.Item>
 
-          <Form.Item {...formItemLayout} label="开户银行">
+          {/* <Form.Item {...formItemLayout} label="开户银行">
             {getFieldDecorator('openBank', {
-              initialValue: data.openBank,
+              initialValue: "",
               rules: [{
                 required: true, message: '请填写正确开户行',
                 pattern: new RegExp(/^[\u4e00-\u9fa5]+$/, 'g'),
               }],
             })(<Input placeholder="请输入开户银行" />)}
-          </Form.Item>
+          </Form.Item> */}
 
-          <Form.Item {...formItemLayout} label="开户城市">
+          {/* <Form.Item {...formItemLayout} label="开户城市">
           <Cascader
               options={this.state.options}
               loadData={this._loadData}
@@ -469,16 +458,16 @@ class Step1 extends Component<Step1Props> {
               initialValue: this.state.inputValue3,
               rules: [{ required: true, message: '请输入开户城市' }],
             })(<Input placeholder="请输入开户城市" type="hidden"/>)}
-          </Form.Item>
+          </Form.Item> */}
 
-          <Form.Item {...formItemLayout} label="开户支行">
+          {/* <Form.Item {...formItemLayout} label="开户支行">
             {getFieldDecorator('openBankAccount', {
-              initialValue: data.openBankAccount,
+              initialValue: "",
               rules: [{ required: true, message: '请输入开户支行' }],
             })(<Input placeholder="请输入开户支行" />)}
-          </Form.Item>
+          </Form.Item> */}
 
-          <Form.Item {...formItemLayout} label="公司银行账号">
+          {/* <Form.Item {...formItemLayout} label="公司银行账号">
             {getFieldDecorator('companyBankAccount', {
               rules: [
                 {
@@ -490,16 +479,31 @@ class Step1 extends Component<Step1Props> {
               getValueFromEvent: event => {
                 return event.target.value.replace(/\D/g, '');
               },
-              initialValue: data.companyBankAccount,
+              initialValue: "",
             })(<Input placeholder="请输入公司银行账号" />)}
-          </Form.Item>
-
-          <Form.Item {...formItemLayout} label="联系人">
-            {getFieldDecorator('contact', {
-              initialValue: data.contact,
+          </Form.Item> */}
+          <Form.Item {...formItemLayout} label="身份证有效期">
+            {getFieldDecorator('date', {
               rules: [
                 {
                   required: true,
+                  message: '请选择有效日期',
+                },
+              ],
+            })(
+              <RangePicker
+                style={{ width: '100%' }}
+                placeholder={[formatMessage({ id: '起止日期' }), formatMessage({ id: '结束日期' })]}
+              />,
+            )}
+          </Form.Item>
+
+          <Form.Item {...formItemLayout} label="联系人姓名">
+            {getFieldDecorator('contact', {
+              initialValue: '',
+              rules: [
+                {
+                  required: false,
                   message: '请填写联系人姓名',
 
                   pattern: new RegExp(/^[\u4e00-\u9fa5]+$/, 'g'),
@@ -508,12 +512,13 @@ class Step1 extends Component<Step1Props> {
             })(<Input placeholder="请输入联系人" />)}
           </Form.Item>
 
-          <Form.Item {...formItemLayout} label="联系电话">
+          {/* ********* */}
+          <Form.Item {...formItemLayout} label="联系人手机号">
             {getFieldDecorator('phone', {
-              initialValue: data.phone,
+              initialValue: '',
               rules: [
                 {
-                  required: true,
+                  required: false,
                   message: '请输入完整手机号码',
                   pattern: new RegExp(/^1(3|4|5|6|7|8|9)\d{9}$/, 'g'),
                 },
@@ -521,11 +526,11 @@ class Step1 extends Component<Step1Props> {
               getValueFromEvent: event => {
                 return event.target.value.replace(/\D/g, '');
               },
-            })(<Input placeholder="请输入联系电话" />)}
+            })(<Input placeholder="请输入手机号码" />)}
           </Form.Item>
-
+          {/* ********* */}
           <Form.Item {...formItemLayout} label="联系地址">
-          <Cascader
+            <Cascader
               options={this.state.options}
               loadData={this._loadData}
               onChange={this._onChange4}
@@ -534,8 +539,8 @@ class Step1 extends Component<Step1Props> {
             />
             {getFieldDecorator('address', {
               initialValue: this.state.inputValue4,
-              rules: [{ required: true, message: '请输入联系地址' }],
-            })(<Input placeholder="请输入联系地址" type="hidden"/>)}
+              rules: [{ required: false, message: '请输入联系地址' }],
+            })(<Input placeholder="请输入联系地址" type="hidden" />)}
           </Form.Item>
 
           <Form.Item
@@ -548,7 +553,7 @@ class Step1 extends Component<Step1Props> {
             }}
             label=""
           >
-            <Button type="primary" onClick={onValidateForm} style={{marginLeft:150}}>
+            <Button type="primary" onClick={onValidateForm} style={{ marginLeft: 150 }}>
               下一步
             </Button>
           </Form.Item>
@@ -561,4 +566,5 @@ class Step1 extends Component<Step1Props> {
 export default connect(({ formAndstepForm }: { formAndstepForm: StateType }) => ({
   data: formAndstepForm.step,
   queryagency: formAndstepForm.queryagency,
+  data1: formAndstepForm.current,
 }))(Form.create<Step1Props>()(Step1));

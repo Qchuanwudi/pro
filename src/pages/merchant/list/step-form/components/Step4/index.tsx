@@ -9,15 +9,22 @@ interface Step4Props {
   data?: StateType['step'];
   dispatch?: Dispatch<any>;
 }
+// interface StepFormProps {
+//   current: StateType['current'];
+// }
+
 class Step4 extends Component<Step4Props> {
   render() {
     const { data, dispatch } = this.props;
+   
     if (!data) {
       return null;
     }
     const { payAccount, receiverAccount, receiverName, amount } = data;
+    // console.log(payAccount,receiverAccount,receiverName,amount)
     const onFinish = () => {
       if (dispatch) {
+       
         dispatch({
           type: 'formAndstepForm/saveCurrentStep',
           payload: 'info',
@@ -25,9 +32,9 @@ class Step4 extends Component<Step4Props> {
         
       }
     };
+   
 
-
-    const onFinish2 = () =>{
+    const onFinish2 = () => {
             
       router.push('/platform/merchant/list')
     }
@@ -59,18 +66,34 @@ class Step4 extends Component<Step4Props> {
         {/* <Button>查看信息</Button> */}
       </>
     );
-    return (
-      <Result
-        status="success"
-        title="添加成功"
-        extra={extra}
-        className={styles.result}
-      >
-        {/* {information} */}
-      </Result>
-    );
+    if (data.code === -1) {
+      console.log(data.code)
+      return (
+        <Result
+          status="error"
+          title="提交失败"
+          subTitle={data.message}
+          extra={extra}
+          className={styles.result}
+        >
+        </Result>
+      );
+    } else {
+
+      return (
+        <Result
+          status="success"
+          title="添加成功"
+          extra={extra}
+          className={styles.result}
+        >
+          {/* {information} */}
+        </Result>
+      );
+    }
   }
 }
 export default connect(({ formAndstepForm }: { formAndstepForm: StateType }) => ({
   data: formAndstepForm.step,
+ 
 }))(Step4);

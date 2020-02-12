@@ -7,10 +7,9 @@ import {
   Row,
   Col,
   Input,
-  FormItem,
-  Button,
-  Icon,
   Form,
+  Icon,
+  Button,
   Modal,
 } from 'antd';
 import React, { Component } from 'react';
@@ -21,6 +20,7 @@ import { connect } from 'dva';
 const FormItem = Form.Item;
 import { BasicProfileDataType, records } from './data.d';
 import styles from './style.less';
+import TableForm from '../components/TableForm';
 import svg from '../../list/components/uploader/u1498.svg';
 import ProTable, { ProColumns, UseFetchDataAction } from '@ant-design/pro-table';
 import { queryBasicProfile, queryimg, querysignacontractlist } from './service';
@@ -74,6 +74,7 @@ class Basic extends Component<BasicProps, BasicState> {
     Payrates: 'none',
     inputbox: 'none',
     record: [],
+    visible: false,
   };
 
   componentDidMount() {
@@ -107,6 +108,11 @@ class Basic extends Component<BasicProps, BasicState> {
       });
     }
   };
+  showModal1 = () => {
+    this.setState({
+      visible: true,
+    });
+  };
 
   handleOk = e => {
     console.log(e);
@@ -122,14 +128,10 @@ class Basic extends Component<BasicProps, BasicState> {
     });
   };
 
-  chang_image =  () => {
-   if (profileAndbasic.businessLicenseAuthPic) {
-     
-   }
+  chang_image = () => {
+    if (profileAndbasic.businessLicenseAuthPic) {
+    }
   };
-
-
-
 
   render() {
     console.log(this.props);
@@ -148,7 +150,7 @@ class Basic extends Component<BasicProps, BasicState> {
         width: 150,
         ellipsis: true,
       },
-      
+
       {
         title: '设备编号',
         dataIndex: 'deviceSerialNumber',
@@ -160,6 +162,60 @@ class Basic extends Component<BasicProps, BasicState> {
         dataIndex: 'createTime',
         key: '4',
         ellipsis: true,
+      },
+    ];
+
+    const columns1 = [
+      {
+        title: '通道名称',
+        width: 100,
+        dataIndex: 'name',
+        key: 'name',
+        fixed: 'left',
+      },
+      {
+        title: '通道类型',
+        width: 100,
+        dataIndex: 'age',
+        key: 'age',
+        fixed: 'left',
+      },
+      { title: '签约费率', dataIndex: 'address', key: '1' },
+      { title: '开通时间', dataIndex: 'address', key: '2' },
+      { title: '签约时间', dataIndex: 'address', key: '3' },
+      { title: '签约账号', dataIndex: 'address', key: '4' },
+      { title: '签约密钥信息', dataIndex: 'address', key: '5' },
+      { title: '签约状态', dataIndex: 'address', key: '6' },
+      { title: '操作人', dataIndex: 'address', key: '7' },
+      {
+        title: '操作',
+        key: 'operation',
+        fixed: 'right',
+        width: 100,
+        render: () => <a onClick={this.showModal1.bind(this)}>查看</a>,
+      },
+    ];
+
+    const data1 = [
+      {
+        key: '1',
+        name: '微信',
+        age: '直联通道',
+        address: '',
+      },
+      {
+        key: '2',
+        name: '支付宝',
+        age: '直联通道',
+        address: '',
+      },
+    ];
+    const data2 = [
+      {
+        key: '1',
+        name: '微信',
+        age: '间联通道',
+        address: '',
       },
     ];
 
@@ -259,9 +315,138 @@ class Basic extends Component<BasicProps, BasicState> {
       },
     ];
 
+    <Modal
+      title="Basic Modal"
+      visible={this.state.visible}
+      onOk={this.handleOk}
+      onCancel={this.handleCancel}
+    >
+      {/* <Row>
+        <Col className="支付宝" span={10}>
+          <div style={{ background: '#ECECEC', padding: '18px' }}>
+            <Card
+              title="支付宝"
+              bordered={false}
+              style={{ width: 500, height: 500, position: 'relative' }}
+            >
+              <span style={{ position: 'absolute', top: 15, left: 360 }}>未开通</span>
+              <Row>
+                <Col span={4}>
+                  <p style={{ display: this.state.Payrates }}>支付费率：</p>
+                  <p>刷脸支付：</p>
+                  <p>扫码支付：</p>
+                </Col>
+                <Col span={5}>
+                  <Form>
+                     
+                    <FormItem>
+                      {getFieldDecorator('username2', {
+                        rules: [
+                          {
+                            required: false,
+                            pattern: new RegExp(
+                              /^((0\.[2-9](\d*))|(([1-9](\d*)(\.))(\d+))|([1-9](\d*)))$/,
+                            ),
+                            message: '您输入的费率有误',
+                          },
+                        ],
+                      })(
+                        <Input
+                          style={{ display: this.state.inputbox }}
+                          prefix={<Icon type="user2" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                        />,
+                      )}
+                    </FormItem>
+                  </Form>
+                </Col>
+                <Col span={5}>
+                  <span
+                    style={{ marginTop: 10, marginLeft: 5, display: this.state.inputbox }}
+                    className="ant-form-text"
+                  >
+                    %
+                  </span>
+                </Col>
+              </Row>
+              {/* 支付宝扫码授权 */}
+              {/* <div style={{ width: 50, marginTop: 200, marginLeft: 150, position: 'relative' }}>
+                <Button
+                  size="large"
+                  type="primary"
+                  style={{ display: this.state.display }}
+                  onClick={this.showModal}
+                >
+                  申请授权
+                </Button>
+                <div
+                  style={{
+                    display: this.state.none,
+                    width: 200,
+                    height: 150,
+                    position: 'absolute',
+                    top: -180,
+                    left: -40,
+                    textAlign: 'center',
+                  }}
+                >
+                  <a>使用支付宝扫描二维码</a>
+                  <img
+                    style={{ width: 200, height: 200 }}
+                    alt="example"
+                    src={`/server/api/merchant/app-merchant/auth/qrcode/${profileAndbasic.merchantId}`}
+                  />
+                </div>
+              </div>
+            </Card>
+          </div>
+          ,
+        </Col>
+
+        <Col className="gutter-row" span={14}>
+          <div style={{ background: '#ECECEC', padding: '18px' }}>
+            <Card title="微信" bordered={false} style={{ width: 500, height: 500 }}>
+              <Row>
+                <Col span={4}>
+                  <p>支付费率：</p>
+                  <p>刷脸支付：</p>
+                  <p>扫码支付：</p>
+                </Col>
+                <Col span={5}>
+                  <Form>
+                     
+                    <FormItem>
+                      {getFieldDecorator('username1', {
+                        rules: [
+                          {
+                            required: true,
+                            pattern: new RegExp(
+                              /^((0\.[2-9](\d*))|(([1-9](\d*)(\.))(\d+))|([1-9](\d*)))$/,
+                            ),
+                            message: '您输入的费率有误',
+                          },
+                        ],
+                      })(
+                        <Input
+                          prefix={<Icon type="user1" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                        />,
+                      )}
+                    </FormItem>
+                  </Form>
+                </Col>
+                <span style={{ marginTop: 10, marginLeft: 5 }} className="ant-form-text">
+                  %
+                </span>
+              </Row>
+              <a>绑定的微信为：xxxxx</a>
+            </Card>
+          </div>
+          ,
+        </Col>
+      </Row>  */}
+    </Modal>;
     return (
       <PageHeaderWrapper>
-        <Card bordered={false}>
+        <Card bordered={false} className={styles.card}>
           <Descriptions></Descriptions>
           <Descriptions title="基本信息" style={{ marginBottom: 32 }}>
             <Descriptions.Item label="企业名称">{profileAndbasic.merchantName}</Descriptions.Item>
@@ -285,7 +470,13 @@ class Basic extends Component<BasicProps, BasicState> {
           <Divider style={{ marginBottom: 32 }} />
           <Descriptions title="法人及对公账户信息" style={{ marginBottom: 32 }}>
             <Descriptions.Item label="法人姓名">{profileAndbasic.legalName}</Descriptions.Item>
-            <Descriptions.Item label="证件类型">{profileAndbasic.legalIdType === '1' ? '身份证': profileAndbasic.legalIdType === '2' ? '护照' : '港澳台'}</Descriptions.Item>
+            <Descriptions.Item label="证件类型">
+              {profileAndbasic.legalIdType === '1'
+                ? '身份证'
+                : profileAndbasic.legalIdType === '2'
+                ? '护照'
+                : '港澳台'}
+            </Descriptions.Item>
             <Descriptions.Item label="证件号码">{profileAndbasic.legalIdNumber}</Descriptions.Item>
             <Descriptions.Item label="开户银行">{profileAndbasic.openBank}</Descriptions.Item> */}
             <Descriptions.Item label="开户支行">
@@ -308,189 +499,80 @@ class Basic extends Component<BasicProps, BasicState> {
             <Descriptions.Item label="商户账号">{accountInfo.username}</Descriptions.Item>
           </Descriptions>
           <Divider style={{ marginBottom: 32 }} />
-          <div className={styles.title}>退货商品</div>
-          <Row>
-            <Col className="支付宝" span={10}>
-              <div style={{ background: '#ECECEC', padding: '18px' }}>
-                <Card
-                  title="支付宝"
-                  bordered={false}
-                  style={{ width: 500, height: 500, position: 'relative' }}
-                >
-                  <span style={{ position: 'absolute', top: 15, left: 360 }}>未开通</span>
-                  <Row>
-                    <Col span={4}>
-                      <p style={{ display: this.state.Payrates }}>支付费率：</p>
-                      <p>刷脸支付：</p>
-                      <p>扫码支付：</p>
-                    </Col>
-                    <Col span={5}>
-                      <Form>
-                         
-                        <FormItem>
-                          {getFieldDecorator('username2', {
-                            rules: [
-                              {
-                                required: false,
-                                pattern: new RegExp(
-                                  /^((0\.[2-9](\d*))|(([1-9](\d*)(\.))(\d+))|([1-9](\d*)))$/,
-                                ),
-                                message: '您输入的费率有误',
-                              },
-                            ],
-                          })(
-                            <Input
-                              style={{ display: this.state.inputbox }}
-                              prefix={<Icon type="user2" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                            />,
-                          )}
-                        </FormItem>
-                      </Form>
-                    </Col>
-                    <Col span={5}>
-                      <span
-                        style={{ marginTop: 10, marginLeft: 5, display: this.state.inputbox }}
-                        className="ant-form-text"
-                      >
-                        %
-                      </span>
-                    </Col>
-                  </Row>
-                  {/* 支付宝扫码授权 */}
-                  <div style={{ width: 50, marginTop: 200, marginLeft: 150, position: 'relative' }}>
-                    <Button
-                      size="large"
-                      type="primary"
-                      style={{ display: this.state.display }}
-                      onClick={this.showModal}
-                    >
-                      申请授权
-                    </Button>
-                    <div
-                      style={{
-                        display: this.state.none,
-                        width: 200,
-                        height: 150,
-                        position: 'absolute',
-                        top: -180,
-                        left: -40,
-                        textAlign: 'center',
-                      }}
-                    >
-                      <a>使用支付宝扫描二维码</a>
-                      <img
-                        style={{ width: 200, height: 200 }}
-                        alt="example"
-                        src={`/server/api/merchant/app-merchant/auth/qrcode/${profileAndbasic.merchantId}`}
-                      />
-                    </div>
-                  </div>
-                </Card>
-              </div>
-              ,
-            </Col>
+        </Card>
 
-            <Col className="gutter-row" span={14}>
-              <div style={{ background: '#ECECEC', padding: '18px' }}>
-                <Card title="微信" bordered={false} style={{ width: 500, height: 500 }}>
-                  <Row>
-                    <Col span={4}>
-                      <p>支付费率：</p>
-                      <p>刷脸支付：</p>
-                      <p>扫码支付：</p>
-                    </Col>
-                    <Col span={5}>
-                      <Form>
-                         
-                        <FormItem>
-                          {getFieldDecorator('username1', {
-                            rules: [
-                              {
-                                required: true,
-                                pattern: new RegExp(
-                                  /^((0\.[2-9](\d*))|(([1-9](\d*)(\.))(\d+))|([1-9](\d*)))$/,
-                                ),
-                                message: '您输入的费率有误',
-                              },
-                            ],
-                          })(
-                            <Input
-                              prefix={<Icon type="user1" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                            />,
-                          )}
-                        </FormItem>
-                      </Form>
-                    </Col>
-                    <span style={{ marginTop: 10, marginLeft: 5 }} className="ant-form-text">
-                      %
-                    </span>
-                  </Row>
-                  <a>绑定的微信为：xxxxx</a>
-                </Card>
-              </div>
-              ,
-            </Col>
-          </Row>
-          <div className={styles.title}>设备信息</div>
+        <Card title="支付通道" className={styles.card} bordered={false}>
+          <Table columns={columns1} dataSource={data1} scroll={{ x: 1300 }} />
+          <Table columns={columns1} dataSource={data2} scroll={{ x: 1300 }} />
+        </Card>
 
+        <Card title="设备信息" className={styles.card} bordered={false}>
           <Table columns={columns} dataSource={records} />
-          <div className={styles.title}>设备信息</div>
-          <Card>
-            {/* 图片信息   */}
-            <Row gutter={[16, 16]}>
-              <Col span={5}>
-              {profileAndbasic.businessLicenseAuthPic && <img
+        </Card>
+
+        <Card title="图片信息" className={styles.card} bordered={false}>
+          {/* 图片信息   */}
+          <Row gutter={[16, 16]}>
+            <Col span={5}>
+              {profileAndbasic.businessLicenseAuthPic && (
+                <img
                   className={styles.imagebusinessLicenseAuthPic}
                   src={profileAndbasic.businessLicenseAuthPic}
                   alt="示例图片"
-                />}
-                {profileAndbasic.businessLicenseAuthPic && <Col>营业执照</Col>}
-              </Col>
+                />
+              )}
+              {profileAndbasic.businessLicenseAuthPic && <Col>营业执照</Col>}
+            </Col>
 
-              <Col span={5} style={{}} onChange={this.chang_image}>
-                {profileAndbasic.legalIdentityCardFront && <img
+            <Col span={5} style={{}} onChange={this.chang_image}>
+              {profileAndbasic.legalIdentityCardFront && (
+                <img
                   className={styles.imagebusinessLicenseAuthPic}
                   src={profileAndbasic.legalIdentityCardFront}
                   alt="示例图片"
-                />}
-                {profileAndbasic.legalIdentityCardFront && <Col>法人身份证正面</Col>}
-              </Col>
-              <Col span={5}>
-                {profileAndbasic.legalIdentityCardBack &&<img
+                />
+              )}
+              {profileAndbasic.legalIdentityCardFront && <Col>法人身份证正面</Col>}
+            </Col>
+            <Col span={5}>
+              {profileAndbasic.legalIdentityCardBack && (
+                <img
                   className={styles.imagebusinessLicenseAuthPic}
                   src={profileAndbasic.legalIdentityCardBack}
                   alt="示例图片"
-                />}
-                {profileAndbasic.legalIdentityCardBack && <Col>法人身份证反面</Col>}
-              </Col>
-              <Col span={5}>
-                {/* <img src={svg} alt="示例图片" />
+                />
+              )}
+              {profileAndbasic.legalIdentityCardBack && <Col>法人身份证反面</Col>}
+            </Col>
+            <Col span={5}>
+              {/* <img src={svg} alt="示例图片" />
                 <Col>行业许可证照片</Col> */}
-              </Col>
-            </Row>
-            <Row gutter={[16, 16]}>
-              <Col span={5}>
-                {profileAndbasic.storeFront && <img
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col span={5}>
+              {profileAndbasic.storeFront && (
+                <img
                   className={styles.imagebusinessLicenseAuthPic}
                   src={profileAndbasic.storeFront}
                   alt="示例图片"
-                />}
-                {profileAndbasic.storeFront && <Col>门头照片</Col>}
-              </Col>
-              <Col span={5}>
-                {/* <img src={svg} alt="示例图片" />
+                />
+              )}
+              {profileAndbasic.storeFront && <Col>门头照片</Col>}
+            </Col>
+            <Col span={5}>
+              {/* <img src={svg} alt="示例图片" />
                 <Col>店铺内景1</Col> */}
-              </Col>
-              <Col span={5}>
-                {/* <img src={svg} alt="示例图片" />
+            </Col>
+            <Col span={5}>
+              {/* <img src={svg} alt="示例图片" />
                 <Col>店铺内景2</Col> */}
-              </Col>
-              <Col span={5}>
-                {/* <img src={svg} alt="示例图片" />
+            </Col>
+            <Col span={5}>
+              {/* <img src={svg} alt="示例图片" />
                 <Col>店铺内景3</Col> */}
-              </Col>
-            </Row>
-          </Card>
+            </Col>
+          </Row>
         </Card>
       </PageHeaderWrapper>
     );

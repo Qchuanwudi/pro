@@ -270,11 +270,17 @@ const TableList: React.FC<TableListProps> = () => {
             </Dropdown>
           ),
         ]}
-        tableAlertRender={selectedRowKeys => (
-          <div>
-            已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项
-          </div>
-        )}
+
+
+     
+        // tableAlertRender={selectedRowKeys => (
+          
+        //   <div>
+        //     说的<a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项
+        //   </div>
+        // )}
+
+        
         request={async (params = {}) => {
           const pagination = { current: params.current, size: params.pageSize };
 

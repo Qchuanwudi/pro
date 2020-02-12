@@ -81,11 +81,11 @@ class Step2 extends Component<Step2Props> {
     }
     const { validateFields, getFieldsValue } = form;
     const onPrev = () => {
-      change_hangye;
+      
       if (dispatch) {
         const values = getFieldsValue();
         console.log(values);
-        debugger;
+        
         dispatch({
           type: 'formAndstepForm/saveStepFormData',
           payload: {

@@ -82,9 +82,6 @@ class Step3 extends Component<Step3Props> {
               // address: '',
               appMerchantPaywayList: [
                 {
-                  createBy: '',
-                  createTime: '',
-                  isDeleted: true,
                   merchantId: '123',
                   paywayAccount: '123',
                   paywayBank: '123',
@@ -157,7 +154,7 @@ class Step3 extends Component<Step3Props> {
         </Form.Item>
         
         <Row>
-          <Col span={14} style={{ textAlign: 'right' }}>
+          <Col span={13} style={{ textAlign: 'right' }}>
             <Button
           type="primary"
           onClick={onPrev}
@@ -170,7 +167,7 @@ class Step3 extends Component<Step3Props> {
         <Button
           type="primary"
           onClick={onPrev3} 
-          style={{marginLeft:100}}
+          style={{marginLeft:50}}
         >
           取消添加
         </Button>
