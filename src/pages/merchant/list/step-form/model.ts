@@ -46,7 +46,23 @@ export interface StateType {
         settlementCardBank: string;
         openBankAccount: string;
       }
-  ]
+    ]
+    appMerchantPaywayList: {
+      paywayAccount: [
+        
+      ],
+    
+      paywayBank:string,
+
+      paywayCity:string,
+
+      paywaySubBank:string,
+
+      paywayType:string,
+
+
+
+    }
   };
   
 
@@ -92,13 +108,17 @@ const Model: ModelType = {
       // amount: '',
       // example_pic: '',
       appMerchantSettle: [
-        
-         
-          
-        
-         
-       
+        {
+
+        }
+
       ],
+      appMerchantPaywayList: {
+        paywayAccount: [
+        
+        ],
+      },
+      
     },
    
 

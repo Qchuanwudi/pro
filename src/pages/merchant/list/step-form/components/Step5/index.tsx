@@ -224,11 +224,31 @@ class Step1 extends Component<Step1Props> {
 
     const onValidateForm = () => {
       validateFields((err: any, values: StateType['step']) => {
-        console.log(values)
+
+        let newVal = JSON.parse(JSON.stringify(values))
+        let paywayType = newVal.paywayType;
+        delete newVal.paywayType;
+
+        let payload = {};
+
+        if (paywayType == '1') {
+          let aliCommissionAccount = newVal.aliCommissionAccount;
+          let wxCommissionAccount = newVal.wxCommissionAccount;
+          delete newVal.aliCommissionAccount;
+          delete newVal.wxCommissionAccount;
+
+          payload['appMerchantPaywayList'] = {
+            paywayAccount: [aliCommissionAccount, wxCommissionAccount],
+          };
+        }
+
+        payload['paywayType'] = paywayType;
+        payload['appMerchantSettle'] = [newVal];
         if (!err && dispatch) {
           dispatch({
             type: 'formAndstepForm/saveStepFormData',
-            payload: values
+            payload
+
              
              
           });
