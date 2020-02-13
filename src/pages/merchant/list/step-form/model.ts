@@ -36,7 +36,20 @@ export interface StateType {
     amount: string;
 
     example_pic: string; // lizi
+    appMerchantSettle:[
+      {
+        paywayType: string;
+        settlementCardType: string;
+        settlementCardNo: string;
+        settlementName: string;
+        settlementCardAddress: string;
+        settlementCardBank: string;
+        openBankAccount: string;
+      }
+  ]
   };
+  
+
 }
 
 export type Effect = (
@@ -78,7 +91,17 @@ const Model: ModelType = {
       // receiverName: '',
       // amount: '',
       // example_pic: '',
+      appMerchantSettle: [
+        
+         
+          
+        
+         
+       
+      ],
     },
+   
+
     // example_pic: '',
   },
 

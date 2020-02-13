@@ -1,4 +1,4 @@
-import { Button, Divider, Form, Input, Select, Spin, Cascader, DatePicker } from 'antd';
+import { Button, Divider, Form, Input, Select, Spin, Cascader, DatePicker,Checkbox  } from 'antd';
 import React, { Component, Fragment } from 'react';
 import { formatMessage } from 'umi-plugin-react/locale';
 import { Dispatch } from 'redux';
@@ -145,6 +145,14 @@ class Step1 extends Component<Step1Props> {
     }
   };
 
+
+  onChange(e) {
+    console.log(`checked = ${e.target.checked}`);
+  }
+
+
+  
+
   _loadData = selectedOptions => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
     const id = targetOption.value;
@@ -231,7 +239,7 @@ class Step1 extends Component<Step1Props> {
           });
           dispatch({
             type: 'formAndstepForm/saveCurrentStep',
-            payload: 'confirm',
+            payload: 'billinginfo',
           });
         }
       });
@@ -251,14 +259,14 @@ class Step1 extends Component<Step1Props> {
     return (
       <Fragment>
         <Form layout="horizontal" className={styles.stepForm} hideRequiredMark>
-          <Form.Item {...formItemLayout} label="商户名称">
+          <Form.Item {...formItemLayout} label="商户名称" style={{width:500}}>
             {getFieldDecorator('merchantName', {
               initialValue: '',
               rules: [{ required: true, message: '请输入企业名称' }],
             })(<Input placeholder="请输入企业名称" />)}
           </Form.Item>
 
-          <Form.Item {...formItemLayout} label="商户简称">
+          <Form.Item {...formItemLayout} label="商户简称" style={{width:500}}>
             {getFieldDecorator('storeAbbreviation', {
               initialValue: '',
               rules: [{ required: true, message: '请输入商户简称' }],
@@ -266,14 +274,14 @@ class Step1 extends Component<Step1Props> {
           </Form.Item>
 
           {/* **** */}
-          <Form.Item {...formItemLayout} label="商户类型">
-            {getFieldDecorator('merchantName', {
+          <Form.Item {...formItemLayout} label="商户类型" style={{width:500}}>
+            {getFieldDecorator('merchantName1', {
               initialValue: '',
               rules: [{ required: true, message: '请输入企业名称' }],
             })(<Input placeholder="请输入企业名称" />)}
           </Form.Item>
           {/* **** */}
-          <Form.Item {...formItemLayout} label="商户行业">
+          <Form.Item {...formItemLayout} label="商户行业" style={{width:500}}>
             {getFieldDecorator('industryCode', {
               initialValue: '',
               rules: [
@@ -286,23 +294,23 @@ class Step1 extends Component<Step1Props> {
             })(<Input />)}
           </Form.Item>
           {/* ***** */}
-          <Form.Item {...formItemLayout} label="社会信用代码">
-            {getFieldDecorator('merchantName', {
+          <Form.Item {...formItemLayout} label="社会信用代码" style={{width:500}}>
+            {getFieldDecorator('socialCreditCode', {
               initialValue: '',
               rules: [{ required: true, message: '请输入企业名称' }],
             })(<Input placeholder="请输入企业名称" />)}
           </Form.Item>
           {/* ***** */}
 
-          <Form.Item {...formItemLayout} label="营业执照号">
+          <Form.Item {...formItemLayout} label="营业执照号" style={{width:500}}>
             {getFieldDecorator('businessLicenseNo', {
               initialValue: '',
               rules: [{ required: true, message: '请输入营业执照号' }],
             })(<Input placeholder="请输入营业执照号" />)}
           </Form.Item>
 
-          <Form.Item {...formItemLayout} label="营业执照有效期">
-            {getFieldDecorator('date', {
+          <Form.Item style={{position:'relative'}} {...formItemLayout} label="营业执照有效期" style={{width:500}}>
+            {getFieldDecorator('licenseStartDate',{
               rules: [
                 {
                   required: true,
@@ -315,11 +323,25 @@ class Step1 extends Component<Step1Props> {
                 placeholder={[formatMessage({ id: '起止日期' }), formatMessage({ id: '结束日期' })]}
               />,
             )}
+             {getFieldDecorator('isLicensePerpetual', {
+            })(
+              <Checkbox style={{position:'absolute',left:400,width:90}} onChange={this.onChange}>永久</Checkbox>
+            )}
+            
           </Form.Item>
+              
+          
+          {/* <Form.Item {...formItemLayout} label="">
+            {getFieldDecorator('isLicensePerpetual', {
+            })(
+              <Checkbox onChange={this.onChange}>永久</Checkbox>
+            )}
+          </Form.Item> */}
+
 
           {/* ****** */}
-          <Form.Item {...formItemLayout} label="经营范围">
-            {getFieldDecorator('registeredAddress', {
+          <Form.Item {...formItemLayout} label="经营范围" style={{width:500}}>
+            {getFieldDecorator('businessScope', {
               initialValue: this.state.inputValue,
               rules: [
                 {
@@ -331,7 +353,7 @@ class Step1 extends Component<Step1Props> {
           </Form.Item>
           {/* ****** */}
 
-          <Form.Item {...formItemLayout} label="注册地址">
+          <Form.Item {...formItemLayout} label="注册地址" style={{width:500}}>
             <Cascader
               options={this.state.options}
               loadData={this._loadData}
@@ -345,7 +367,7 @@ class Step1 extends Component<Step1Props> {
             })(<Input placeholder="请输入注册地址" type="hidden" />)}
           </Form.Item>
 
-          <Form.Item {...formItemLayout} label="店铺地址">
+          <Form.Item {...formItemLayout} label="店铺地址" style={{width:500}}>
             <Cascader
               options={this.state.options}
               loadData={this._loadData}
@@ -373,7 +395,7 @@ class Step1 extends Component<Step1Props> {
             })(<Input placeholder="请输入微信签约账号" />)}
           </Form.Item> */}
 
-          <Form.Item style={{ marginBottom: 10 }} {...formItemLayout} label="法人姓名">
+          <Form.Item style={{ marginBottom: 20,width:500 }} {...formItemLayout} label="法人姓名" >
             {getFieldDecorator('legalName', {
               initialValue: '',
               rules: [
@@ -386,8 +408,8 @@ class Step1 extends Component<Step1Props> {
             })(<Input placeholder="请输入法人姓名" />)}
           </Form.Item>
 
-          <Form.Item {...formItemLayout} label="法人手机号">
-            {getFieldDecorator('phone', {
+          <Form.Item {...formItemLayout} style={{ marginTop: 10,width:500 }} label="法人手机号">
+            {getFieldDecorator('legalMobile', {
               initialValue: '',
               rules: [
                 {
@@ -420,7 +442,7 @@ class Step1 extends Component<Step1Props> {
             )}
           </Form.Item> */}
 
-          <Form.Item {...formItemLayout} label="法人身份证号码">
+          <Form.Item {...formItemLayout} label="法人身份证号码" style={{width:500 }}>
             {getFieldDecorator('legalIdNumber', {
               initialValue: '',
               rules: [
@@ -482,7 +504,7 @@ class Step1 extends Component<Step1Props> {
               initialValue: "",
             })(<Input placeholder="请输入公司银行账号" />)}
           </Form.Item> */}
-          <Form.Item {...formItemLayout} label="身份证有效期">
+          <Form.Item {...formItemLayout} label="身份证有效期" style={{width:500 }}>
             {getFieldDecorator('date', {
               rules: [
                 {
@@ -498,7 +520,7 @@ class Step1 extends Component<Step1Props> {
             )}
           </Form.Item>
 
-          <Form.Item {...formItemLayout} label="联系人姓名">
+          <Form.Item {...formItemLayout} label="联系人姓名" style={{width:500 }}>
             {getFieldDecorator('contact', {
               initialValue: '',
               rules: [
@@ -513,7 +535,7 @@ class Step1 extends Component<Step1Props> {
           </Form.Item>
 
           {/* ********* */}
-          <Form.Item {...formItemLayout} label="联系人手机号">
+          <Form.Item {...formItemLayout} label="联系人手机号" style={{width:500 }}>
             {getFieldDecorator('phone', {
               initialValue: '',
               rules: [
@@ -529,7 +551,26 @@ class Step1 extends Component<Step1Props> {
             })(<Input placeholder="请输入手机号码" />)}
           </Form.Item>
           {/* ********* */}
-          <Form.Item {...formItemLayout} label="联系地址">
+
+
+          {/* ********* */}
+          <Form.Item {...formItemLayout} label="联系人邮箱" style={{width:500 }}>
+            {getFieldDecorator('email', {
+              initialValue: '',
+              rules: [
+                {
+                  required: false,
+                  message: '请输入完整手机号码',
+                  pattern: new RegExp(/^1(3|4|5|6|7|8|9)\d{9}$/, 'g'),
+                },
+              ],
+              getValueFromEvent: event => {
+                return event.target.value.replace(/\D/g, '');
+              },
+            })(<Input placeholder="请输入邮箱" />)}
+          </Form.Item>
+          {/* ********* */}
+          <Form.Item {...formItemLayout} label="联系地址" style={{width:500 }}>
             <Cascader
               options={this.state.options}
               loadData={this._loadData}
@@ -544,6 +585,7 @@ class Step1 extends Component<Step1Props> {
           </Form.Item>
 
           <Form.Item
+            style={{width:500 }}
             wrapperCol={{
               xs: { span: 24, offset: 0 },
               sm: {

@@ -11,6 +11,7 @@ import {
   Icon,
   Button,
   Modal,
+  Timeline
 } from 'antd';
 import React, { Component } from 'react';
 import { FormComponentProps } from 'antd/es/form';
@@ -25,6 +26,7 @@ import svg from '../../list/components/uploader/u1498.svg';
 import ProTable, { ProColumns, UseFetchDataAction } from '@ant-design/pro-table';
 import { queryBasicProfile, queryimg, querysignacontractlist } from './service';
 import { async } from 'q';
+import { router } from 'umi';
 
 const progressColumns = [
   {
@@ -192,7 +194,11 @@ class Basic extends Component<BasicProps, BasicState> {
         key: 'operation',
         fixed: 'right',
         width: 100,
-        render: () => <a onClick={this.showModal1.bind(this)}>查看</a>,
+        render: (record,showModal1) => <a onClick={async () => {
+          // window.location.href =
+          //   '/merchant/list/detailpage?channelId=' + record.merchantId;
+        this.showModal1()
+        }}>查看</a>,
       },
     ];
 
@@ -315,135 +321,8 @@ class Basic extends Component<BasicProps, BasicState> {
       },
     ];
 
-    <Modal
-      title="Basic Modal"
-      visible={this.state.visible}
-      onOk={this.handleOk}
-      onCancel={this.handleCancel}
-    >
-      {/* <Row>
-        <Col className="支付宝" span={10}>
-          <div style={{ background: '#ECECEC', padding: '18px' }}>
-            <Card
-              title="支付宝"
-              bordered={false}
-              style={{ width: 500, height: 500, position: 'relative' }}
-            >
-              <span style={{ position: 'absolute', top: 15, left: 360 }}>未开通</span>
-              <Row>
-                <Col span={4}>
-                  <p style={{ display: this.state.Payrates }}>支付费率：</p>
-                  <p>刷脸支付：</p>
-                  <p>扫码支付：</p>
-                </Col>
-                <Col span={5}>
-                  <Form>
-                     
-                    <FormItem>
-                      {getFieldDecorator('username2', {
-                        rules: [
-                          {
-                            required: false,
-                            pattern: new RegExp(
-                              /^((0\.[2-9](\d*))|(([1-9](\d*)(\.))(\d+))|([1-9](\d*)))$/,
-                            ),
-                            message: '您输入的费率有误',
-                          },
-                        ],
-                      })(
-                        <Input
-                          style={{ display: this.state.inputbox }}
-                          prefix={<Icon type="user2" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                        />,
-                      )}
-                    </FormItem>
-                  </Form>
-                </Col>
-                <Col span={5}>
-                  <span
-                    style={{ marginTop: 10, marginLeft: 5, display: this.state.inputbox }}
-                    className="ant-form-text"
-                  >
-                    %
-                  </span>
-                </Col>
-              </Row>
-              {/* 支付宝扫码授权 */}
-              {/* <div style={{ width: 50, marginTop: 200, marginLeft: 150, position: 'relative' }}>
-                <Button
-                  size="large"
-                  type="primary"
-                  style={{ display: this.state.display }}
-                  onClick={this.showModal}
-                >
-                  申请授权
-                </Button>
-                <div
-                  style={{
-                    display: this.state.none,
-                    width: 200,
-                    height: 150,
-                    position: 'absolute',
-                    top: -180,
-                    left: -40,
-                    textAlign: 'center',
-                  }}
-                >
-                  <a>使用支付宝扫描二维码</a>
-                  <img
-                    style={{ width: 200, height: 200 }}
-                    alt="example"
-                    src={`/server/api/merchant/app-merchant/auth/qrcode/${profileAndbasic.merchantId}`}
-                  />
-                </div>
-              </div>
-            </Card>
-          </div>
-          ,
-        </Col>
-
-        <Col className="gutter-row" span={14}>
-          <div style={{ background: '#ECECEC', padding: '18px' }}>
-            <Card title="微信" bordered={false} style={{ width: 500, height: 500 }}>
-              <Row>
-                <Col span={4}>
-                  <p>支付费率：</p>
-                  <p>刷脸支付：</p>
-                  <p>扫码支付：</p>
-                </Col>
-                <Col span={5}>
-                  <Form>
-                     
-                    <FormItem>
-                      {getFieldDecorator('username1', {
-                        rules: [
-                          {
-                            required: true,
-                            pattern: new RegExp(
-                              /^((0\.[2-9](\d*))|(([1-9](\d*)(\.))(\d+))|([1-9](\d*)))$/,
-                            ),
-                            message: '您输入的费率有误',
-                          },
-                        ],
-                      })(
-                        <Input
-                          prefix={<Icon type="user1" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                        />,
-                      )}
-                    </FormItem>
-                  </Form>
-                </Col>
-                <span style={{ marginTop: 10, marginLeft: 5 }} className="ant-form-text">
-                  %
-                </span>
-              </Row>
-              <a>绑定的微信为：xxxxx</a>
-            </Card>
-          </div>
-          ,
-        </Col>
-      </Row>  */}
-    </Modal>;
+    
+      
     return (
       <PageHeaderWrapper>
         <Card bordered={false} className={styles.card}>
@@ -574,6 +453,62 @@ class Basic extends Component<BasicProps, BasicState> {
             </Col>
           </Row>
         </Card>
+        <Modal
+      title="支付宝签约"
+      visible={this.state.visible}
+      onOk={this.handleOk}
+      onCancel={this.handleCancel}
+        >
+          
+          <Row gutter={[16, 16]}>
+            <Col span={15}>
+            <Timeline>
+    <Timeline.Item>2015-09-01</Timeline.Item>
+    <Timeline.Item>2015-09-01</Timeline.Item>
+    <Timeline.Item>2015-09-01</Timeline.Item>
+          </Timeline>,
+          </Col>
+            <Col span={6}>
+                  <img
+                    style={{ width:150, height: 150 }}
+                    alt="example"
+                    src={`/server/api/merchant/app-merchant/auth/qrcode/${profileAndbasic.merchantId}`}
+                  />   
+         </Col>
+          </Row>
+
+          <Divider />
+
+<Row gutter={[16, 16]}>
+            <Col span={6}>
+       收款账号：ccccccc@支付宝账户号
+      <br />
+      签约费率：0.42%
+      <br />
+      签约应用ID:
+      <br />
+      签约产品:  
+      <br />
+   
+  </Col>
+   <Col span={6} />
+         
+</Row>
+
+     
+ <Button
+    size="large"
+    type="primary"
+    style={{marginLeft:70}}
+    onClick={this.showModal}
+    >
+     发起签约
+    </Button>
+               
+          
+  
+  
+        </Modal>;
       </PageHeaderWrapper>
     );
   }

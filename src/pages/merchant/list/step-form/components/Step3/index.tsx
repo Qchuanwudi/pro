@@ -80,17 +80,17 @@ class Step3 extends Component<Step3Props> {
                 username: this.state.value1,
               },
               // address: '',
-              appMerchantPaywayList: [
-                {
-                  merchantId: '123',
-                  paywayAccount: '123',
-                  paywayBank: '123',
-                  paywayCity: '123',
-                  paywaySubBank: '123',
-                  paywayType: 0,
-                  status: 0,
-                },
-              ],
+              // appMerchantPaywayList: [
+              //   {
+              //     merchantId: '123',
+              //     paywayAccount: '123',
+              //     paywayBank: '123',
+              //     paywayCity: '123',
+              //     paywaySubBank: '123',
+              //     paywayType: 0,
+              //     status: 0,
+              //   },
+              // ],
               appMerchantSignedList: [],
               // legalName: '1',
               merchantCode: '1',
@@ -107,7 +107,7 @@ class Step3 extends Component<Step3Props> {
       if (dispatch) {
         dispatch({
           type: 'formAndstepForm/saveCurrentStep',
-          payload: 'info',
+          payload: 'confirm2',
         });
       }
     };
