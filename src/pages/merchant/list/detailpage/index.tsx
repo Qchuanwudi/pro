@@ -367,13 +367,14 @@ class Basic extends Component<BasicProps, BasicState> {
           </Descriptions>
           <Divider style={{ marginBottom: 32 }} />
 
-          <Descriptions title="联系人信息" style={{ marginBottom: 32 }}>
-            <Descriptions.Item label="联系人姓名">{profileAndbasic.contact}</Descriptions.Item>
-            <Descriptions.Item label="联系人电话">{profileAndbasic.phone}</Descriptions.Item>
-            <Descriptions.Item label="联系人地址">{accountInfo.address}</Descriptions.Item>
+          <Descriptions title="法人信息" style={{ marginBottom: 32 }}>
+            <Descriptions.Item label="法人姓名">{profileAndbasic.contact}</Descriptions.Item>
+            <Descriptions.Item label="法人手机号">{profileAndbasic.phone}</Descriptions.Item>
+            <Descriptions.Item label="法人身份证号">{accountInfo.address}</Descriptions.Item>
+            <Descriptions.Item label="身份证有效期">1</Descriptions.Item>
           </Descriptions>
           <Divider style={{ marginBottom: 32 }} />
-          <Descriptions title="账号信息" style={{ marginBottom: 32 }}>
+          <Descriptions title="联系人信息" style={{ marginBottom: 32 }}>
             <Descriptions.Item label="商户编号">{profileAndbasic.merchantCode}</Descriptions.Item>
             <Descriptions.Item label="商户账号">{accountInfo.username}</Descriptions.Item>
           </Descriptions>
@@ -384,10 +385,14 @@ class Basic extends Component<BasicProps, BasicState> {
           <Table columns={columns1} dataSource={data1} scroll={{ x: 1300 }} />
           <Table columns={columns1} dataSource={data2} scroll={{ x: 1300 }} />
         </Card>
-
+        <Card title="账号信息" className={styles.card} bordered={false}>
+          <Table columns={columns} dataSource={records} />
+        </Card>
         <Card title="设备信息" className={styles.card} bordered={false}>
           <Table columns={columns} dataSource={records} />
         </Card>
+
+        
 
         <Card title="图片信息" className={styles.card} bordered={false}>
           {/* 图片信息   */}
