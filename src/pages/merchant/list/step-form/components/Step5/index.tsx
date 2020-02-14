@@ -224,46 +224,52 @@ class Step1 extends Component<Step1Props> {
 
     const onValidateForm = () => {
       validateFields((err: any, values: StateType['step']) => {
-
-        let newVal = JSON.parse(JSON.stringify(values))
+        let newVal = JSON.parse(JSON.stringify(values));
         let paywayType = newVal.paywayType;
-        let signedRatio =newVal.signedRatio
-console.log(signedRatio)
+        let signedRatio = newVal.signedRatio;
+        console.log(signedRatio);
         let payload = {};
 
+        payload['appMerchantPaywayList'] = [];
+
+        let payWayItem = {
+          paywayType: paywayType,
+          signedRatio: signedRatio,
+          paywayBank: newVal.paywayBank,
+          paywaySubBank: newVal.paywaySubBank,
+          paywayAccount: '',
+        };
+
         if (paywayType == '1') {
-          
           let aliCommissionAccount = newVal.aliCommissionAccount;
           let wxCommissionAccount = newVal.wxCommissionAccount;
           delete newVal.aliCommissionAccount;
           delete newVal.wxCommissionAccount;
 
-          payload['appMerchantPaywayList'] = {
-            paywayAccount: [aliCommissionAccount, wxCommissionAccount],
-          };
-         
-         
+          payWayItem['paywayAccount'] = aliCommissionAccount || wxCommissionAccount;
         }
-        
-        payload['appMerchantSignedList'] = {
+
+        payload['appMerchantPaywayList'].push(payWayItem);
+
+        (payload['appMerchantSignedList'] = {
           paywayType,
-          signedRatio
-        },
-
-
-        // payload['paywayType'] = paywayType;
-        payload['appMerchantSettle'] = {
-          openBankAccount: newVal.openBankAccount,settlementCardAddress: newVal.settlementCardAddress,
-          settlementCardBank: newVal.settlementCardBank, settlementCardNo: newVal.settlementCardNo,
-          settlementCardType:newVal.settlementCardType,settlementName:newVal.settlementName,
-        };
+          signedRatio,
+        }),
+          // payload['paywayType'] = paywayType;
+          (payload['appMerchantSettle'] = {
+            settlementCardAddress: newVal.settlementCardAddress,
+            settlementCardNo: newVal.settlementCardNo,
+            settlementCardType: newVal.settlementCardType,
+            settlementName: newVal.settlementName,
+          });
+        console.log('=====输入的==================');
+        console.log(JSON.stringify(payload));
+        console.log(payload);
+        console.log('====================================');
         if (!err && dispatch) {
           dispatch({
             type: 'formAndstepForm/saveStepFormData',
-            payload
-
-             
-             
+            payload,
           });
           dispatch({
             type: 'formAndstepForm/saveCurrentStep',
@@ -272,6 +278,7 @@ console.log(signedRatio)
         }
       });
     };
+
 
     const agency = async e => {
       const data = { size: 10, total: 60 };
@@ -331,14 +338,14 @@ console.log(signedRatio)
           <Form.Item {...formItemLayout} label="支付宝签约账号">
             {getFieldDecorator('aliCommissionAccount', {
               initialValue: "",
-              rules: [{ required: true, message: '请输入支付宝签约账号' }],
+              rules: [{ required: false, message: '请输入支付宝签约账号' }],
             })(<Input placeholder="请输入支付宝签约账号" />)}
           </Form.Item>
 
           <Form.Item {...formItemLayout} label="微信签约账号">
             {getFieldDecorator('wxCommissionAccount', {
               initialValue: "",
-              rules: [{ required: true, message: '请输入微信签约账号' }],
+              rules: [{ required: false, message: '请输入微信签约账号' }],
             })(<Input placeholder="请输入微信签约账号" />)}
               </Form.Item>
               </>

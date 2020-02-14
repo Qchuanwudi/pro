@@ -266,7 +266,8 @@ class Basic extends Component<BasicProps, BasicState> {
 
     const { getFieldDecorator } = this.props.form;
     const { profileAndbasic, data } = this.props;
-    const { basicGoods, accountInfo, records, payWayList, subAccountList } = profileAndbasic;
+    
+    const { basicGoods, accountInfo, records, payWayList =[], subAccountList=[] } = profileAndbasic;
 
     let goodsData: typeof basicGoods = [];
     if (basicGoods.length) {
@@ -357,17 +358,12 @@ class Basic extends Component<BasicProps, BasicState> {
       },
     ];
 
-   // 支付通道
-   const payWayType = {
-    direct: payWayList,
-    inDirect: payWayList
-  };
 
-     // 支付通道
-  //  const payWayType = {
-  //   direct: payWayList.filter(v => v.paywayType != 4),
-  //   inDirect: payWayList.filter(v => v.paywayType == 4),
-  // };
+     //支付通道
+   const payWayType = {
+    direct: payWayList.filter(v => v.paywayType != 4),
+    inDirect: payWayList.filter(v => v.paywayType == 4),
+  };
 
     const { direct, inDirect } = payWayType;
 

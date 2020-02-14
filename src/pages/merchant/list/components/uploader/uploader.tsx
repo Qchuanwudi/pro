@@ -11,8 +11,9 @@ interface UploaderProps {
   title: string; // 标题
   uploader_url?: string; // 上传图片的网址
   delete_url?: string; // 删除图片的网址
-  onChange: (value: string) => void;
-  onDelete: () => void;
+  field: string; // 字段
+  onChange: (value: Object) => void;
+  onDelete: (value: Object) => void;
 }
 interface UploaderState {
   pic_url: string;
@@ -52,9 +53,10 @@ export class UploaderComponent extends Component<UploaderProps, UploaderState> {
         res.json().then(json => {
           console.log(res);
           this.setState({ pic_url: json.result, pending: false }, () => {
-            console.log('props url');
-            console.log(this.state.pic_url);
-            this.props.onChange(this.state.pic_url);
+            const { onChange, field } = this.props;
+            onChange({
+              [field]: this.state.pic_url,
+            });
           });
         }),
       );
@@ -64,14 +66,19 @@ export class UploaderComponent extends Component<UploaderProps, UploaderState> {
 
   deleteFile = () => {
     // todo 在这里实现你的删除方法,包括错误处理
-    this.setState({ pic_url: '' });
+    this.setState({ pic_url: '' }, () => {
+      const { onDelete, field } = this.props;
+      onDelete({
+        [field]: '',
+      });
+    });
   };
 
   render() {
     const uploader = (
       <Upload
         name="file"
-        action="/server/api/merchant/app-merchant-file/save"
+        action="/server/api/file/upload"
         listType={'picture'}
         fileList={[]}
         customRequest={this.uploadFile.bind(this)}

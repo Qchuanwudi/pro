@@ -36,7 +36,7 @@ export interface StateType {
     amount: string;
 
     example_pic: string; // lizi
-    appMerchantSettle:[
+    appMerchantSettle: [
       {
         paywayType: string;
         settlementCardType: string;
@@ -45,27 +45,21 @@ export interface StateType {
         settlementCardAddress: string;
         settlementCardBank: string;
         openBankAccount: string;
-      }
-    ]
+      },
+    ];
+    appMerchantFileList: [];
     appMerchantPaywayList: {
-      paywayAccount: [
-        
-      ],
-    
-      paywayBank:string,
+      paywayAccount: [];
 
-      paywayCity:string,
+      paywayBank: string;
 
-      paywaySubBank:string,
+      paywayCity: string;
 
-      paywayType:string,
+      paywaySubBank: string;
 
-
-
-    }
+      paywayType: string;
+    };
   };
-  
-
 }
 
 export type Effect = (
@@ -107,20 +101,12 @@ const Model: ModelType = {
       // receiverName: '',
       // amount: '',
       // example_pic: '',
-      appMerchantSettle: [
-        {
-
-        }
-
-      ],
+      appMerchantSettle: [{}],
+      appMerchantFileList: [],
       appMerchantPaywayList: {
-        paywayAccount: [
-        
-        ],
+        paywayAccount: [],
       },
-      
     },
-   
 
     // example_pic: '',
   },
@@ -189,10 +175,6 @@ const Model: ModelType = {
     },
 
     saveStepFormData(state, { payload }) {
-      console.log('model payload');
-      console.log(payload);
-      console.log('model payload');
-
       return {
         ...state,
         step: {
@@ -223,9 +205,6 @@ const Model: ModelType = {
       };
     },
     changeExamplePic(state, { payload }) {
-      console.log('reducer');
-      console.log(payload);
-
       return {
         ...state,
         example_pic: payload,
