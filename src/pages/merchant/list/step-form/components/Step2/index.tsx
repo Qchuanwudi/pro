@@ -55,17 +55,17 @@ class Step2 extends Component<Step2Props> {
     });
   };
 
-  //   change_dianpu1 = (value: string) => {
-  //     this.props.dispatch({type:'formAndstepForm/saveStepFormData',payload:{}})
-  //   }
+    change_shouyintai = (value: string) => {
+      this.props.dispatch({type:'formAndstepForm/saveStepFormData',payload:{}})
+    }
 
-  //   change_dianpu2 = (value: string) => {
-  //     this.props.dispatch({type:'formAndstepForm/saveStepFormData',payload:{}})
-  //   }
+    change_shanghudiannei = (value: string) => {
+      this.props.dispatch({type:'formAndstepForm/saveStepFormData',payload:{}})
+    }
 
-  //   change_dianpu3 = (value: string) => {
-  //     this.props.dispatch({type:'formAndstepForm/saveStepFormData',payload:{}})
-  //   }
+    change_jiesuanka = (value: string) => {
+      this.props.dispatch({type:'formAndstepForm/saveStepFormData',payload:{}})
+    }
 
   // change_hangye = (value: string) => {
   //   this.props.dispatch({type:'formAndstepForm/saveStepFormData',payload:{}})
@@ -120,11 +120,12 @@ class Step2 extends Component<Step2Props> {
         <UploaderComponent title={'营业执照'} onChange={this.change_yingyezhizhao} />
         <UploaderComponent title={'法人身份证正面'} onChange={this.change_farenzhengmian} />
         <UploaderComponent title={'法人身份证反面'} onChange={this.change_farenfanmian} />
-        <UploaderComponent title={'门头照片'} onChange={this.change_mentouzhaopian} />
-        <UploaderComponent title={'店铺内景1'}  />
-        <UploaderComponent title={'店铺内景2'}  />
-        <UploaderComponent title={'店铺内景3'}  />
-        <UploaderComponent title={'行业许可证'}  />
+        <UploaderComponent title={'商户门头照片'} onChange={this.change_mentouzhaopian} />
+        <UploaderComponent title={'商户收银台照片'}onChange={this.change_shouyintai}  />
+        <UploaderComponent title={'商户店内照片'} onChange={this.change_shanghudiannei}  />
+        <UploaderComponent title={'结算卡正面照片'} onChange={this.change_jiesuanka} />
+        <UploaderComponent title={'结算卡背面照片'} />
+        <UploaderComponent title={'特殊行业许可证'}  />
         <div style={{ marginTop: 30, marginBottom: 30 }}>
           营业执照：选择示例图片查看大图提示：请保持图片内容清晰，格式支持jpg、jepg、png、bmp格式，文件大写不超过5M
         </div>

@@ -35,3 +35,22 @@ export async function querysignacontractlist(params:selectAppMerchant) {
   }
 })
 }
+
+export async function fetchPayWayList(params: selectAppMerchant) {
+  return request('/server/api/merchant/app-merchant-payway/list', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+export async function fetchSubAccountList(params: selectAppMerchant) {
+  return request('/server/api/account/app-account/merchant/subaccount/list', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+

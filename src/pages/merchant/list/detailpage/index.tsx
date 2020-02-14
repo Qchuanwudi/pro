@@ -11,7 +11,7 @@ import {
   Icon,
   Button,
   Modal,
-  Timeline
+  Timeline,
 } from 'antd';
 import React, { Component } from 'react';
 import { FormComponentProps } from 'antd/es/form';
@@ -67,6 +67,17 @@ interface BasicProps {
   loading: boolean;
   dispatch: Dispatch<any>;
   profileAndbasic: BasicProfileDataType;
+  records: records;
+  payWayList: [];
+}
+
+enum payType {
+  // 1=支付宝,2=微信,3=银行卡,4=汇付
+  '',
+  '支付宝',
+  '微信',
+  '银行卡',
+  '汇付',
 }
 
 class Basic extends Component<BasicProps, BasicState> {
@@ -93,6 +104,22 @@ class Basic extends Component<BasicProps, BasicState> {
 
     dispatch({
       type: 'profileAndbasic/fetch',
+      payload: {
+        size: 5,
+        total: 50,
+      },
+    });
+
+    dispatch({
+      type: 'profileAndbasic/fetchPaywayList',
+      payload: {
+        size: 5,
+        total: 50,
+      },
+    });
+
+    dispatch({
+      type: 'profileAndbasic/fetchSubAccountList',
       payload: {
         size: 5,
         total: 50,
@@ -171,16 +198,22 @@ class Basic extends Component<BasicProps, BasicState> {
       {
         title: '通道名称',
         width: 100,
-        dataIndex: 'name',
-        key: 'name',
+        dataIndex: 'paywayType',
+        key: 'paywayType',
         fixed: 'left',
+        render: (text: any, record: any, index: any) => {
+          return `${payType[text]}`;
+        },
       },
       {
         title: '通道类型',
         width: 100,
-        dataIndex: 'age',
-        key: 'age',
+        dataIndex: 'paywaySubBank',
+        key: 'paywaySubBank',
         fixed: 'left',
+        render: (text: any, record: any, index: any) => {
+          return `${payType[text]}`;
+        },
       },
       { title: '签约费率', dataIndex: 'address', key: '1' },
       { title: '开通时间', dataIndex: 'address', key: '2' },
@@ -194,11 +227,17 @@ class Basic extends Component<BasicProps, BasicState> {
         key: 'operation',
         fixed: 'right',
         width: 100,
-        render: (record,showModal1) => <a onClick={async () => {
-          // window.location.href =
-          //   '/merchant/list/detailpage?channelId=' + record.merchantId;
-        this.showModal1()
-        }}>查看</a>,
+        render: (record, showModal1) => (
+          <a
+            onClick={async () => {
+              // window.location.href =
+              //   '/merchant/list/detailpage?channelId=' + record.merchantId;
+              this.showModal1();
+            }}
+          >
+            查看
+          </a>
+        ),
       },
     ];
 
@@ -227,10 +266,7 @@ class Basic extends Component<BasicProps, BasicState> {
 
     const { getFieldDecorator } = this.props.form;
     const { profileAndbasic, data } = this.props;
-    const { basicGoods, accountInfo, records } = profileAndbasic;
-    console.log(data);
-    console.log(profileAndbasic);
-    console.log(records);
+    const { basicGoods, accountInfo, records, payWayList, subAccountList } = profileAndbasic;
 
     let goodsData: typeof basicGoods = [];
     if (basicGoods.length) {
@@ -321,8 +357,21 @@ class Basic extends Component<BasicProps, BasicState> {
       },
     ];
 
-    
-      
+   // 支付通道
+   const payWayType = {
+    direct: payWayList,
+    inDirect: payWayList
+  };
+
+     // 支付通道
+  //  const payWayType = {
+  //   direct: payWayList.filter(v => v.paywayType != 4),
+  //   inDirect: payWayList.filter(v => v.paywayType == 4),
+  // };
+
+    const { direct, inDirect } = payWayType;
+
+    // subAccountList 子账户列表
     return (
       <PageHeaderWrapper>
         <Card bordered={false} className={styles.card}>
@@ -380,10 +429,9 @@ class Basic extends Component<BasicProps, BasicState> {
           </Descriptions>
           <Divider style={{ marginBottom: 32 }} />
         </Card>
-
         <Card title="支付通道" className={styles.card} bordered={false}>
-          <Table columns={columns1} dataSource={data1} scroll={{ x: 1300 }} />
-          <Table columns={columns1} dataSource={data2} scroll={{ x: 1300 }} />
+          <Table columns={columns1} dataSource={direct} scroll={{ x: 1300 }} />
+          <Table columns={columns1} dataSource={inDirect} scroll={{ x: 1300 }} />
         </Card>
         <Card title="账号信息" className={styles.card} bordered={false}>
           <Table columns={columns} dataSource={records} />
@@ -391,9 +439,6 @@ class Basic extends Component<BasicProps, BasicState> {
         <Card title="设备信息" className={styles.card} bordered={false}>
           <Table columns={columns} dataSource={records} />
         </Card>
-
-        
-
         <Card title="图片信息" className={styles.card} bordered={false}>
           {/* 图片信息   */}
           <Row gutter={[16, 16]}>
@@ -459,61 +504,50 @@ class Basic extends Component<BasicProps, BasicState> {
           </Row>
         </Card>
         <Modal
-      title="支付宝签约"
-      visible={this.state.visible}
-      onOk={this.handleOk}
-      onCancel={this.handleCancel}
+          title="支付宝签约"
+          visible={this.state.visible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
         >
-          
           <Row gutter={[16, 16]}>
             <Col span={15}>
-            <Timeline>
-    <Timeline.Item>2015-09-01</Timeline.Item>
-    <Timeline.Item>2015-09-01</Timeline.Item>
-    <Timeline.Item>2015-09-01</Timeline.Item>
-          </Timeline>,
-          </Col>
+              <Timeline>
+                <Timeline.Item>2015-09-01</Timeline.Item>
+                <Timeline.Item>2015-09-01</Timeline.Item>
+                <Timeline.Item>2015-09-01</Timeline.Item>
+              </Timeline>
+              ,
+            </Col>
             <Col span={6}>
-                  <img
-                    style={{ width:150, height: 150 }}
-                    alt="example"
-                    src={`/server/api/merchant/app-merchant/auth/qrcode/${profileAndbasic.merchantId}`}
-                  />   
-         </Col>
+              <img
+                style={{ width: 150, height: 150 }}
+                alt="example"
+                src={`/server/api/merchant/app-merchant/auth/qrcode/${profileAndbasic.merchantId}`}
+              />
+            </Col>
           </Row>
 
           <Divider />
 
-<Row gutter={[16, 16]}>
+          <Row gutter={[16, 16]}>
             <Col span={6}>
-       收款账号：ccccccc@支付宝账户号
-      <br />
-      签约费率：0.42%
-      <br />
-      签约应用ID:
-      <br />
-      签约产品:  
-      <br />
-   
-  </Col>
-   <Col span={6} />
-         
-</Row>
+              收款账号：ccccccc@支付宝账户号
+              <br />
+              签约费率：0.42%
+              <br />
+              签约应用ID:
+              <br />
+              签约产品:
+              <br />
+            </Col>
+            <Col span={6} />
+          </Row>
 
-     
- <Button
-    size="large"
-    type="primary"
-    style={{marginLeft:70}}
-    onClick={this.showModal}
-    >
-     发起签约
-    </Button>
-               
-          
-  
-  
-        </Modal>;
+          <Button size="large" type="primary" style={{ marginLeft: 70 }} onClick={this.showModal}>
+            发起签约
+          </Button>
+        </Modal>
+        ;
       </PageHeaderWrapper>
     );
   }

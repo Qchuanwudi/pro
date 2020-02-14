@@ -71,7 +71,7 @@ export class UploaderComponent extends Component<UploaderProps, UploaderState> {
     const uploader = (
       <Upload
         name="file"
-        action="/server/api/file/upload"
+        action="/server/api/merchant/app-merchant-file/save"
         listType={'picture'}
         fileList={[]}
         customRequest={this.uploadFile.bind(this)}

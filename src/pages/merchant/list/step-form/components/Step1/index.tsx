@@ -267,18 +267,28 @@ class Step1 extends Component<Step1Props> {
           </Form.Item>
 
           <Form.Item {...formItemLayout} label="商户简称" style={{width:500}}>
-            {getFieldDecorator('storeAbbreviation', {
+            {getFieldDecorator('merchantShortName', {
               initialValue: '',
               rules: [{ required: true, message: '请输入商户简称' }],
             })(<Input placeholder="请输入企业简称" />)}
           </Form.Item>
 
           {/* **** */}
-          <Form.Item {...formItemLayout} label="商户类型" style={{width:500}}>
-            {getFieldDecorator('merchantName1', {
-              initialValue: '',
-              rules: [{ required: true, message: '请输入企业名称' }],
-            })(<Input placeholder="请输入企业名称" />)}
+          <Form.Item
+            style={{ marginBottom: 28, marginTop: 20,width:500 }}
+            {...formItemLayout}
+            label="商户类型"
+       
+           
+          >
+            {getFieldDecorator('merchantType', {
+              rules: [{ required: true, message: '请输入选择商户类型' }],
+            })(
+              <Select placeholder="请输入选择商户类型">
+                <Option value="1">个体工商</Option>
+                <Option value="2">私营企业</Option>
+              </Select>,
+            )}
           </Form.Item>
           {/* **** */}
           <Form.Item {...formItemLayout} label="商户行业" style={{width:500}}>
@@ -367,7 +377,7 @@ class Step1 extends Component<Step1Props> {
             })(<Input placeholder="请输入注册地址" type="hidden" />)}
           </Form.Item>
 
-          <Form.Item {...formItemLayout} label="店铺地址" style={{width:500}}>
+          <Form.Item {...formItemLayout} label="经营地址" style={{width:500}}>
             <Cascader
               options={this.state.options}
               loadData={this._loadData}
@@ -375,7 +385,7 @@ class Step1 extends Component<Step1Props> {
               changeOnSelect
               placeholder="请选择店铺地址"
             />
-            {getFieldDecorator('storeAddress', {
+            {getFieldDecorator('businessAddress', {
               initialValue: this.state.inputValue2,
               rules: [{ required: true, message: '请输入店铺地址' }],
             })(<Input placeholder="请输入店铺地址" type="hidden" />)}

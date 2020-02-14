@@ -8,7 +8,7 @@ export async function fakeSubmitForm(params: any) {
 }
 
 export async function queryFakeList(params: any) {
-  return request('/server/api/bn/channel/app-channel/list', {
+  return request('/server/api/dict/app-dict-bank-info/list', {
     method: 'POST',
     data: params,
   });

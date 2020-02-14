@@ -84,30 +84,51 @@ export interface BasicProfileDataType {
   accountInfo: AccountInfo;
   listparticulars: listparticulars;
   querysigna: querysigna;
-  records:records[]
+  records: records[];
 }
 
 export interface selectAppMerchant {
   merchantId: string;
 }
 export interface querysigna {
-  createBy:string	
-  createTime:string
-  deviceModel:string	
-  deviceSerialNumber:string	
-  merchantId:string	
-  token	:string	
-  updateBy:string	
-  updateTime:string
-  total:string
+  createBy: string;
+  createTime: string;
+  deviceModel: string;
+  deviceSerialNumber: string;
+  merchantId: string;
+  token: string;
+  updateBy: string;
+  updateTime: string;
+  total: string;
 }
 
-
 export interface records {
-  merchantId: string,
-  deviceSerialNumber: string,
-  deviceModel: string,
-  token: string,
-  createBy: string,
-  createTime: string,
+  merchantId: string;
+  deviceSerialNumber: string;
+  deviceModel: string;
+  token: string;
+  createBy: string;
+  createTime: string;
+}
+
+export interface payWayList {
+  createBy: string;
+  id: number;
+  isDeleted: boolean;
+  merchantId: string;
+  paywayAccount: string;
+  paywayBank: string;
+  paywaySubBank: string;
+  paywayType: number;
+}
+
+export interface subAccountList {
+  createBy: string;
+  id: number;
+  isDeleted: boolean;
+  merchantId: string;
+  paywayAccount: string;
+  paywayBank: string;
+  paywaySubBank: string;
+  paywayType: number;
 }

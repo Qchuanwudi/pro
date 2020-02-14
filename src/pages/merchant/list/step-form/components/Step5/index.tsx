@@ -227,11 +227,12 @@ class Step1 extends Component<Step1Props> {
 
         let newVal = JSON.parse(JSON.stringify(values))
         let paywayType = newVal.paywayType;
-        delete newVal.paywayType;
-
+        let signedRatio =newVal.signedRatio
+console.log(signedRatio)
         let payload = {};
 
         if (paywayType == '1') {
+          
           let aliCommissionAccount = newVal.aliCommissionAccount;
           let wxCommissionAccount = newVal.wxCommissionAccount;
           delete newVal.aliCommissionAccount;
@@ -240,10 +241,22 @@ class Step1 extends Component<Step1Props> {
           payload['appMerchantPaywayList'] = {
             paywayAccount: [aliCommissionAccount, wxCommissionAccount],
           };
+         
+         
         }
+        
+        payload['appMerchantSignedList'] = {
+          paywayType,
+          signedRatio
+        },
 
-        payload['paywayType'] = paywayType;
-        payload['appMerchantSettle'] = [newVal];
+
+        // payload['paywayType'] = paywayType;
+        payload['appMerchantSettle'] = {
+          openBankAccount: newVal.openBankAccount,settlementCardAddress: newVal.settlementCardAddress,
+          settlementCardBank: newVal.settlementCardBank, settlementCardNo: newVal.settlementCardNo,
+          settlementCardType:newVal.settlementCardType,settlementName:newVal.settlementName,
+        };
         if (!err && dispatch) {
           dispatch({
             type: 'formAndstepForm/saveStepFormData',
@@ -270,6 +283,9 @@ class Step1 extends Component<Step1Props> {
       }
       console.log(response);
     };
+
+
+    
 
     return (
       <Fragment>
@@ -301,6 +317,14 @@ class Step1 extends Component<Step1Props> {
               </Select>,
             )}
           </Form.Item>
+
+    <Form.Item {...formItemLayout}  label='签约费率'>
+        {form.getFieldDecorator('signedRatio', {
+          rules: [{ required: true,message: '必须输入签约费率'}],
+        })(<Input  suffix="%" type="number"/>)}
+      </Form.Item>
+
+
    
           {this.state.view === 'personal' ? (
             <>
@@ -394,18 +418,32 @@ class Step1 extends Component<Step1Props> {
 
          
 
-          <Form.Item {...formItemLayout} label="开户银行">
-            {getFieldDecorator('settlementCardBank', {
-              initialValue: "",
-              rules: [{
-                required: true, message: '请填写正确开户行',
-                pattern: new RegExp(/^[\u4e00-\u9fa5]+$/, 'g'),
-              }],
-            })(<Input placeholder="请输入开户银行" />)}
+          <Form.Item
+            onClick={agency}
+            {...formItemLayout}
+            label="开户银行"
+            className={styles.stepForm}
+            hideRequiredMark
+            style={{ marginBottom: 25, marginTop: 20 }}
+          >
+            {getFieldDecorator('paywayBank', {
+              rules: [{ required: true, message: '请选择开户银行' }],
+            })(
+              
+              <Select placeholder="请选择开户银行">
+                {this.state.data2.map((item, index) => (
+                  <Option key={index} value={item.bankName}>
+                    {item.bankName}
+                  </Option>
+                ))}
+              </Select>,
+             
+            )}
           </Form.Item>
+        
 
           <Form.Item {...formItemLayout} label="开户支行">
-            {getFieldDecorator('openBankAccount', {
+            {getFieldDecorator('paywaySubBank', {
               initialValue: "",
               rules: [{ required: true, message: '请输入开户支行' }],
             })(<Input placeholder="请输入开户支行" />)}
